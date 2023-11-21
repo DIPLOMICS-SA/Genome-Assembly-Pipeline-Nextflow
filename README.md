@@ -2,8 +2,8 @@
 This repository contains a nextflow pipeline for denovo assembly of long nanopore reads.
 
 # Introduction
-This workflow uses the following:
 
+This workflow uses the following:
 Dorado for basecalling
 Samtools for converting bam files to fastq files
 FastQC for quality check
@@ -14,6 +14,8 @@ Medaka for second round assembly polishing
 QUAST for assembly Quality assessment
 
 # Modules to load on the CHPC
+
+The following modules need to be loaded before running the pipeline:
 * module purge
 * module load chpc/BIOMODULES
 * module load dorado
@@ -29,14 +31,14 @@ QUAST for assembly Quality assessment
 * module load nextflow/23.10.0-all
 
 # Usage
-To obtain the workflow, having installed nextflow, users can run:
 
-nextflow run main.nf --help
+To obtain the workflow, having installed nextflow, users can run:
+* nextflow run main.nf --help
 to see the options for the workflow.
 
 # Workflow outputs
-The primary outputs of the pipeline include:
 
+The primary outputs of the pipeline include:
 A fastq quality control report
 An assembly fasta file
 A quast quality report
