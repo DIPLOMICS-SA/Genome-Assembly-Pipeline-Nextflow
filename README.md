@@ -13,9 +13,9 @@ Racon for first round assembly polishing
 Medaka for second round assembly polishing
 QUAST for assembly Quality assessment
 
-# Modules to load on the CHPC
+# Dependencies
 
-The following modules need to be loaded before running the pipeline:
+The following modules need to be loaded on the CHPC before running the pipeline:
 * module purge
 * module load chpc/BIOMODULES
 * module load dorado
