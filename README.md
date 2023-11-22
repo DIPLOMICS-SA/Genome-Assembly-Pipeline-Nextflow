@@ -4,14 +4,14 @@ This repository contains a nextflow pipeline for denovo assembly of long nanopor
 # Introduction
 
 This workflow uses the following:
-Dorado for basecalling
-Samtools for converting bam files to fastq files
-FastQC for quality check
-Nanofilt for filtering and trimming
-Flye for genome assembly
-Racon for first round assembly polishing
-Medaka for second round assembly polishing
-QUAST for assembly Quality assessment
+* Dorado for basecalling
+* Samtools for converting bam files to fastq files
+* FastQC for quality check
+* Nanofilt for filtering and trimming
+* Flye for genome assembly
+* Racon for first round assembly polishing
+* Medaka for second round assembly polishing
+* QUAST for assembly Quality assessment
 
 # Dependencies
 
