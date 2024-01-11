@@ -56,7 +56,6 @@ def helpMessage(){
 
 params.outdir = 'results'
 params.podsF = '/home/staukobong/pod5/'
-params.lineage = '/home/staukobong/lineage_files/eukaryota_odb10.2020-09-10.tar'
 
 pods_ch = Channel.fromPath(params.podsF, checkIfExists: true)
 lineage_ch = Channel.fromPath(params.lineage, checkIfExists: true)
@@ -80,7 +79,7 @@ process BASECALL {
 
     script:
     """
-    dorado basecaller /home/staukobong/dna_r10.4.1_e8.2_400bps_hac@v4.2.0 $sample_id > sample_id.bam
+    dorado basecaller dna_r10.4.1_e8.2_400bps_hac@v4.2.0 $sample_id > sample_id.bam
     """
 }
 
@@ -114,7 +113,7 @@ process CONVERT {
  */
 
 process FASTQC1 {
-    module 'FastQC'
+    module 'nanoplot'
     debug true
 
     publishDir("${params.outdir}/fastqc_before_trim", mode: 'copy')
@@ -123,11 +122,11 @@ process FASTQC1 {
     path sample_id
 
     output:
-    path 'sample_id_fastqc.html', emit: fastqc_files
+    path 'NanoPlot_FASTQC_1', emit: fastqc_files
 
     script:
     """
-    fastqc $sample_id -t 4
+    NanoPlot -t 8 --fastq $sample_id --tsv_stats --plots hex dot -o NanoPlot_FASTQC_1
     """
 
 }
@@ -161,7 +160,7 @@ process TRIM {
  */
 
 process FASTQC2 {
-    module 'FastQC'
+    module 'nanoplot'
     debug true
 
     publishDir("${params.outdir}/fastqc_trim", mode: 'copy')
@@ -170,11 +169,11 @@ process FASTQC2 {
     path sample_id
 
     output:
-    path 'sample_id.trimmed_fastqc.html', emit: fastqc_files2
+    path 'NanoPlot_FASTQC_2', emit: fastqc_files2
 
     script:
     """
-    fastqc $sample_id -t 4
+    NanoPlot -t 8 --fastq $sample_id --tsv_stats --plots hex dot -o NanoPlot_FASTQC_2
     """
 
 }
@@ -222,7 +221,7 @@ process MAPPINGS {
 
     script:
     """
-    minimap2 -ax map-ont -t 4 assembly/assembly.fasta sample_id.trimmed.fastq > sample_id.sam
+    minimap2 -ax map-ont -t 6 assembly/assembly.fasta sample_id.trimmed.fastq > sample_id.sam
     """
 
 }
@@ -245,7 +244,7 @@ process POLISH1 {
 
     script:
     """
-    racon -m 8 -x -8 -g -6 -w 500 -t 4 sample_id.trimmed.fastq sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
+    racon -m 8 -x -8 -g -6 -w 500 -t 6 sample_id.trimmed.fastq sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
     """
 
 }
@@ -265,11 +264,11 @@ process POLISHMED {
     path sample_id
 
     output:
-    path 'medaka_polished.fasta', emit: Polished_files2
+    path 'medaka_polished', emit: Polished_files2
 
     script:
     """
-    medaka_consensus -t 4 -m r1041_e82_400bps_hac_v4.2.0 -i sample_id.trimmed.fastq -d Racon_polished.fasta -o medaka_polished.fasta
+    medaka_consensus -t 6 -m r1041_e82_400bps_hac_v4.2.0 -i sample_id.trimmed.fastq -d Racon_polished.fasta -o medaka_polished
     """
     
 }
@@ -293,7 +292,7 @@ process BUSCOstat {
 
     script:
     """
-    busco -m genome -in medaka_polished.fasta -o Busco_outputs -l ${lineage}
+    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs -l eukaryota_odb10.2020-09-10.tar
     """
 
 }
@@ -317,7 +316,7 @@ process assemblyStats {
 
     script:
     """
-    quast -t 4 -o Quast_output -r assembly/assembly.fasta Racon_polished.fasta consensus.fasta
+    quast -t 6 -o Quast_output -r assembly/assembly.fasta Racon_polished.fasta medaka_polished/consensus.fasta
     """
 
 }
