@@ -11,7 +11,8 @@ This workflow uses the following:
 * Flye for genome assembly
 * Racon for first round assembly polishing
 * Medaka for second round assembly polishing
-* QUAST for assembly Quality assessment
+* Busco for assembly quality assessment
+* QUAST for assembly quality assessment
 
 # Dependencies
 
@@ -20,15 +21,21 @@ The following modules need to be loaded on the CHPC before running the pipeline:
 * module load chpc/BIOMODULES
 * module load dorado
 * module load samtools/1.9
-* module load FastQC
+* module load nanoplot
 * module load nanofilt
 * module load flye/2.9
 * module load minimap2
 * module load racon/1.5.0
 * module load medaka/1.11.1
 * module load quast/4.6.3
-* module load busco
+* module load quast/4.6.3
+* module load busco/5.4.5
+* module load bbmap/38.95
+* module load metaeuk
 * module load nextflow/23.10.0-all
+
+The following models and databases need to be downloaded before running the pipeline:
+
 
 # Usage
 
