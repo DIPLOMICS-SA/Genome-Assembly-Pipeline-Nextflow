@@ -48,6 +48,7 @@ to see the options for the workflow.
 # Workflow outputs
 
 The primary outputs of the pipeline include:
-A fastq quality control report
-An assembly fasta file
-A quast quality report
+* A fastq quality control report
+* 3 assembled fasta files (From Flye, Racon and Medaka)
+* A busco report
+* A quast quality report
