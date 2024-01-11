@@ -35,6 +35,7 @@ The following modules need to be loaded on the CHPC before running the pipeline:
 * module load nextflow/23.10.0-all
 
 The following models and databases need to be downloaded before running the pipeline:
+* dorado download --model dna_r10.4.1_e8.2_400bps_hac@v4.2.0
 
 
 # Usage
