@@ -292,7 +292,7 @@ process BUSCOstat {
 
     script:
     """
-    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs -l eukaryota_odb10.2020-09-10.tar
+    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs -l eukaryota_odb10.2020-09-10.tar --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
