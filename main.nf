@@ -58,7 +58,6 @@ params.outdir = 'results'
 params.podsF = '/home/staukobong/pod5/'
 
 pods_ch = Channel.fromPath(params.podsF, checkIfExists: true)
-lineage_ch = Channel.fromPath(params.lineage, checkIfExists: true)
 
 /*
  * Basecalling PORE5 files using Dorado
@@ -126,7 +125,7 @@ process FASTQC1 {
 
     script:
     """
-    NanoPlot -t 8 --fastq $sample_id --tsv_stats --plots hex dot -o NanoPlot_FASTQC_1
+    NanoPlot -t 8 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_1
     """
 
 }
@@ -150,7 +149,7 @@ process TRIM {
 
     script:
     """
-    NanoFilt -l 200 -q 15 --headcrop 50 --tailcrop 50  $sample_id > sample_id.trimmed.fastq
+    NanoFilt -l 200 -q 15 --headcrop 50 $sample_id > sample_id.trimmed.fastq
     """
 }
 
@@ -173,7 +172,7 @@ process FASTQC2 {
 
     script:
     """
-    NanoPlot -t 8 --fastq $sample_id --tsv_stats --plots hex dot -o NanoPlot_FASTQC_2
+    NanoPlot -t 8 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_2
     """
 
 }
@@ -197,7 +196,7 @@ process ASSEMBLY {
 
     script:
     """
-    flye --nano-raw $sample_id -o assembly -i 1 -t 6
+    flye --nano-raw $sample_id -o assembly --asm-coverage 40 -g 1.6g -t 20
     """
 
 }
@@ -268,7 +267,7 @@ process POLISHMED {
 
     script:
     """
-    medaka_consensus -t 6 -m r1041_e82_400bps_hac_v4.2.0 -i sample_id.trimmed.fastq -d Racon_polished.fasta -o medaka_polished
+    medaka_consensus -t 64 -m r1041_e82_400bps_hac_v4.2.0 -i sample_id.trimmed.fastq -d Racon_polished.fasta -o medaka_polished
     """
     
 }
@@ -316,7 +315,7 @@ process assemblyStats {
 
     script:
     """
-    quast -t 6 -o Quast_output -r assembly/assembly.fasta Racon_polished.fasta medaka_polished/consensus.fasta
+    quast.py -t 40 -o Quast_output --gene-finding --eukaryote medaka_polished/consensus.fasta --fragmented
     """
 
 }
@@ -339,7 +338,7 @@ workflow {
     MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
     POLISH1(TRIM.out.trimmed_fastq.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
     POLISHMED(TRIM.out.trimmed_fastq.combine(POLISH1.out.Polished_files))
-    BUSCOstat(POLISH1.out.Polished_files.combine(lineage_ch))
-    assemblyStats(ASSEMBLY.out.Assembly_files.combine(POLISH1.out.Polished_files.combine(POLISHMED.out.Polished_files2)))
+    BUSCOstat(POLISHMED.out.Polished_files2)
+    assemblyStats(POLISHMED.out.Polished_files2)
 
 }
