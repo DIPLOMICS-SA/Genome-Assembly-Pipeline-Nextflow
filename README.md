@@ -1,5 +1,5 @@
 # Genome-Assembly-Pipeline-Nextflow
-This repository contains a nextflow pipeline for denovo assembly of long nanopore reads.
+This repository contains a nextflow pipeline for denovo genome assembly of long ONT reads.
 
 # Introduction
 
