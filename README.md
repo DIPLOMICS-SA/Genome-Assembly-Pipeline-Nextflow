@@ -15,6 +15,8 @@ This workflow uses the following:
 * BUSCO for assembly quality assessment
 * QUAST for assembly quality assessment
 
+![Image Alt text](/97d92b1b-f47a-4e23-adcd-27b8d0f559cb.jpg
+
 Flye is used sepcifically for the assembly of diploid species. It is recommended to use canu (https://github.com/marbl/canu.git) for polyploid species as well as Purge_Dups (https://github.com/dfguan/purge_dups.git).
 
 # Dependencies
