@@ -1,5 +1,6 @@
 # Genome-Assembly-Pipeline-Nextflow
 This repository contains a nextflow pipeline for denovo genome assembly of long ONT reads.
+This pipeline was bulit to supprt the genome assembly and anlysis of the 1KSA project - A pilot project aimed at sequencing and assemblying indegenious South African species.
 
 # Introduction
 
@@ -13,6 +14,8 @@ This workflow uses the following:
 * Medaka for second round assembly polishing
 * BUSCO for assembly quality assessment
 * QUAST for assembly quality assessment
+
+Flye is used sepcifically for the assembly of diploid species. It is recommended to use canu (https://github.com/marbl/canu.git) for polyploid species as well as Purge_Dups (https://github.com/dfguan/purge_dups.git).
 
 # Dependencies
 
