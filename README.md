@@ -17,6 +17,8 @@ This workflow uses the following:
 
 Flye is used sepcifically for the assembly of diploid species. It is recommended to use canu (https://github.com/marbl/canu.git) for polyploid species as well as Purge_Dups (https://github.com/dfguan/purge_dups.git).
 
+![plot](./Users/setshaba.taukobong/Desktop/DIPLOMICS/97d92b1b-f47a-4e23-adcd-27b8d0f559cb.jpg)
+
 # Dependencies
 
 The following modules need to be loaded on the CHPC before running the pipeline:
