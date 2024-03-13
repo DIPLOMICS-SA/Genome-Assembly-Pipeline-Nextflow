@@ -20,7 +20,7 @@ This workflow uses the following:
 ![Image Alt text](97d92b1b-f47a-4e23-adcd-27b8d0f559cb.jpg)
 
 Flye is used for the assembly of haploid and diploid species. It is recommended to use canu (https://github.com/marbl/canu.git) and Purge_Dups (https://github.com/dfguan/purge_dups.git) for polyploid species.
-If basecaling was done on the sequencing machine, the Alternative.nf script can be used to run genome assembly. 
+If basecalling was done on the sequencing machine, the Alternative.nf script can be used to run genome assembly once the fastq files have been concatinated. 
 
 
 # Dependencies
