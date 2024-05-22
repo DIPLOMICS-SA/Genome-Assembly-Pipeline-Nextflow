@@ -1,6 +1,6 @@
 # 1KSA-Genome-Assembly-Pipeline-Nextflow
 This repository contains a nextflow pipeline for denovo genome assembly of long ONT reads.
-This pipeline was built to support the genome assembly and anlysis of the 1KSA project - A pilot project aimed at sequencing and assemblying indegenious South African species.
+This pipeline was built to support the genome assembly and analysis of the 1KSA project - A pilot project aimed at sequencing and assembling indigenous South African species.
 
 # Introduction
 
