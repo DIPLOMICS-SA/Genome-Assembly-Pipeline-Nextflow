@@ -18,29 +18,29 @@ nextflow.enable.dsl=2
  *
  */
 
-params.pipelineVersion = "1.0.0"
+if (params.help) {
 
-def helpMessage(){
- log.info"""
+    log.info """
  =========================================================
       GENOME ASSEMBLY ~ version ${params.pipelineVersion}
  =========================================================
    Usage:
 
    Command for running the pipeline is as follows:
-  
+
    nextflow run GenomeAssemblyPipeline.nf OPTIONS
 
    OPTIONS:
 
     NextFlow options [OPTIONAL]:
-	Produce an html report with useful metrics of the pipeline [FILE]          -with-report
+        Produce an html report with useful metrics of the pipeline [FILE]          -with-report
         Produce a tabular file with tracings of each processes [FILE]              -with-trace
         Produce an html graphic of all process executed [FILE]                     -with-timeline
         Resume running pipeline where it has left off after an error for example   -resume
 
-
-"""}
+"""
+    exit 0
+}
 
 
 /*
@@ -278,7 +278,7 @@ process POLISHMED {
  */
 
 process BUSCOstat {
-    module 'busco'
+    module 'busco/5.4.5'
     debug true
 
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
@@ -291,7 +291,7 @@ process BUSCOstat {
 
     script:
     """
-    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs -l eukaryota_odb10.2020-09-10.tar --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
