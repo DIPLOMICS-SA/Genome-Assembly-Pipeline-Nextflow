@@ -4,7 +4,7 @@ This pipeline was built to support the genome assembly and analysis of the 1KSA 
 
 # Introduction
 
-This workflow uses the following:
+This workflow uses the following tools:
 * Dorado for basecalling
 * Samtools for converting bam files to fastq files
 * Nanoplot for quality check
