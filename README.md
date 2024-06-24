@@ -44,6 +44,8 @@ The following modules need to be loaded on the CHPC before running the pipeline:
 * module load bbmap/38.95
 * module load metaeuk
 * module load python
+* module load jellyfish
+* module load genomescope-2
 * module load nextflow/23.10.0-all
 
 The following models and databases need to be downloaded before running the pipeline:
