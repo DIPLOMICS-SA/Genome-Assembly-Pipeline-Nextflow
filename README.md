@@ -14,12 +14,14 @@ This workflow uses the following tools:
 * Medaka for second round assembly polishing
 * BUSCO for assembly quality assessment
 * QUAST for assembly quality assessment
+* Jellyfish for counting of k-mers in DNA
+* Genomescope for assembly quality assessment
 
 
 
 ![Image Alt text](97d92b1b-f47a-4e23-adcd-27b8d0f559cb.jpg)
 
-Flye is used for the assembly of haploid and diploid species. It is recommended to use canu (https://github.com/marbl/canu.git) and Purge_Dups (https://github.com/dfguan/purge_dups.git) for polyploid species.
+Flye is used for the assembly of haploid and diploid species. It is recommended to use main-plant-assembly.nf pipeline for polyploid species. The main-plant-assembly.nf includes an uncollapsed flye version, jellyfish (https://github.com/gmarcais/Jellyfish.git) and Genomescope (https://github.com/schatzlab/genomescope.git).
 If basecalling was done on the sequencing machine, the Alternative.nf script can be used to run genome assembly once the fastq files have been concatinated. 
 
 
