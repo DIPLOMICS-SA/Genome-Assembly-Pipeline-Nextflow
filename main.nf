@@ -248,31 +248,6 @@ process POLISH1 {
 
 }
 
-
-/*
- * Polishing assembly using Medaka
- */
-
-process POLISHMED {
-    module 'medaka/1.11.1'
-    debug true
-
-    publishDir("${params.outdir}/Medaka_results", mode: 'copy')
-
-    input:
-    path sample_id
-
-    output:
-    path 'medaka_polished', emit: Polished_files2
-
-    script:
-    """
-    medaka_consensus -t 64 -m r1041_e82_400bps_hac_v4.2.0 -i sample_id.trimmed.fastq -d Racon_polished.fasta -o medaka_polished
-    """
-    
-}
-
-
 /*
  * Genome assembly assessment using Busco
  */
@@ -337,7 +312,6 @@ workflow {
     ASSEMBLY(TRIM.out.trimmed_fastq)
     MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
     POLISH1(TRIM.out.trimmed_fastq.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
-    POLISHMED(TRIM.out.trimmed_fastq.combine(POLISH1.out.Polished_files))
     BUSCOstat(POLISHMED.out.Polished_files2)
     assemblyStats(POLISHMED.out.Polished_files2)
 
