@@ -13,6 +13,7 @@ nextflow.enable.dsl=2
  GitHub - DIPLOMICS [1KSA Plant Genome Assembly project]
  # Authors
  Setshaba Taukobong <setshaba.taukobong@diplomics.org.za> <sc.taukobong@gmail.com>
+ Larysha Rothmann <larysha@cengen.co.za>
 
 ---------------------------------------------------------------------------------------
  *
