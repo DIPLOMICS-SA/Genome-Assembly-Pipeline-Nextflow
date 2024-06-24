@@ -1,48 +1,42 @@
 #!/usr/bin/env nextflow
 
+nextflow.enable.dsl=2
+
+
 /*
+ *
 ========================================================================================
-                         plant_genome_ONT_assembly
+         GENASS: Plant Genome Assembly Pipeline for Nanopore Sequencing Data 
 ========================================================================================
+ 
+# Homepage / Documentation
+ GitHub - DIPLOMICS [1KSA Plant Genome Assembly project]
+ # Authors
+ Setshaba Taukobong <setshaba.taukobong@diplomics.org.za> <sc.taukobong@gmail.com>
 
-[Veldkos | Field Food | Spekboom Projects]
-Contact: Larysha Rothmann <larysha@cengen.co.za>
-
-*/
-
-nextflow.enable.dsl = 2
+---------------------------------------------------------------------------------------
+ *
+ */
 
 if (params.help) {
 
     log.info """
-    =============================================================================
-                         plant_genome_ONT_assembly ~ version 1.0.0
-    =============================================================================
-   
-   The downstream analysis and assembly of ONT basecalled reads, including read QC 
-   (chopper and nanoplot), assembly (flye), assembly polishing (racon and medaka),
-   assembly QC (quast, busco and blobtools), assembly assessment (jellyfish and genomescope)
-   and removing contaminants (custom script). 
-   
-   NOTE: this script depends on `env.sh` for environment modules and `nextflow.config` for PBS settings.
+ =========================================================
+      GENOME ASSEMBLY ~ version ${params.pipelineVersion}
+ =========================================================
+   Usage:
 
-    USAGE: 
-    nextflow run ont_assembly.nf OPTIONS
+   Command for running the pipeline is as follows:
 
-    OPTIONS:
-    <REQUIRED> -
-    --reads : full path to the concatenated file of input ONT basecalled reads in fastq.gz format
-    --outdir : full path to an output directory for results (default is ./results)
+   nextflow run Main-plant-assembly.nf OPTIONS
 
-    <OPTIONAL> -
-    --help : disply this message
-    --busco_model : full path to busco model for core genes - default is viridiplantae_odb10 in 
-                    "/mnt/lustre/users/lrothmann/busco_modules"
-    --approx_size : the approximate or estimated genome size in MB (jellyfish) - default is 80000000                    
+   OPTIONS:
 
-    NEXTFLOW OPTIONS:
-    -resume : continue pipeline from where it left off after error / cluster time out
-    -with-trace : tabular file with tracings of each processes [FILE] 
+    NextFlow options [OPTIONAL]:
+        Produce an html report with useful metrics of the pipeline [FILE]          -with-report
+        Produce a tabular file with tracings of each processes [FILE]              -with-trace
+        Produce an html graphic of all process executed [FILE]                     -with-timeline
+        Resume running pipeline where it has left off after an error for example   -resume
 
 """
     exit 0
@@ -56,7 +50,7 @@ if (params.help) {
 */
 
 params.version = "1.0.0"
-params.reads = '/mnt/lustre/groups/CBBI1622/RESULTS/Polyphylla-test/oxalis_polyphylla_barcode02_fastq_pass.fastq'
+params.reads = 'oxalis_polyphylla_barcode02_fastq_pass.fastq'
 params.outdir = "./" 
 params.busco_model = "/mnt/lustre/groups/CBBI1622/LINEAGES/lineage_files"
 params.approx_size = "80000000" 
