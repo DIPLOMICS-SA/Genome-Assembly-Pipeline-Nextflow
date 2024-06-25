@@ -196,7 +196,7 @@ process ASSEMBLY {
 
     script:
     """
-    flye --nano-raw $sample_id -o assembly --asm-coverage 40 -g 1.6g -t 20
+    flye --nano-raw $sample_id -o assembly --asm-coverage 30 -g 1.6g -t 20
     """
 
 }
