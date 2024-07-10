@@ -149,7 +149,7 @@ process TRIM {
 
     script:
     """
-    NanoFilt -l 200 -q 15 --headcrop 50 $sample_id > sample_id.trimmed.fastq
+    NanoFilt -l 200 -q 10 --headcrop 50 $sample_id > sample_id.trimmed.fastq
     """
 }
 
