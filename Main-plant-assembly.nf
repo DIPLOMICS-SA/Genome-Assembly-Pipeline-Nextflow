@@ -77,7 +77,7 @@ process nanofilt {
 
     script:
     """
-    NanoFilt -l 200 -q 15 --headcrop 10 --tailcrop 10 $raw_reads > pri_filt.fastq
+    NanoFilt -l 200 -q 10 --headcrop 10 --tailcrop 10 $raw_reads > pri_filt.fastq
     """
 }
 
