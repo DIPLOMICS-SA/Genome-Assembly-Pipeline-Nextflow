@@ -125,8 +125,7 @@ process flye {
     flye \
         --nano-raw \
         $filtered_reads \
-        --asm-coverage 40 \
-        --keep-haplotypes \
+        --asm-coverage 30 \
         -g 0.66g \
         --threads 20 \
         --out-dir .
