@@ -14,9 +14,7 @@ This workflow uses the following tools:
 * Medaka for second round assembly polishing
 * BUSCO for assembly quality assessment
 * QUAST for assembly quality assessment
-* Jellyfish for counting of k-mers in DNA
-* Genomescope for assembly quality assessment
-
+* KMC for counting of k-mers in DNA
 
 
 ![Image Alt text](97d92b1b-f47a-4e23-adcd-27b8d0f559cb.jpg)
@@ -43,8 +41,8 @@ The following modules need to be loaded on the CHPC before running the pipeline:
 * module load bbmap/38.95
 * module load metaeuk
 * module load python
-* module load jellyfish
-* module load genomescope-2
+* module load R
+* module load KMC
 * module load nextflow/23.10.0-all
 
 The following models and databases need to be downloaded before running the pipeline:
