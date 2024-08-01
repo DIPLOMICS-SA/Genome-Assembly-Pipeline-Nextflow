@@ -1,6 +1,6 @@
 # 1KSA-Genome-Assembly-Pipeline-Nextflow
 This repository contains a nextflow pipeline for denovo genome assembly of long ONT reads.
-This pipeline was built to support the genome assembly and analysis of the 1KSA project - A pilot project aimed at sequencing and assembling indigenous South African species.
+This pipeline was built to support the genome assembly and analysis of the 1KSA project - A pilot project aimed at sequencing and assembling indigenous South African species. Detailed step by step instructions on how to run this pipeline on the CHPC can be found under files, labelled Instructions.txt.
 
 # Introduction
 
