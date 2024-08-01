@@ -20,7 +20,7 @@ screen -r 77109.pts-66.login2
 Once the screen session has been open, request for compute resources using a job script and the following command:
 qsub job.sh
 
-One can request resources from two queues: serial long (Running the pipeline first for QC purposes) and bigmem (Running the rest of the pipeline as seriallong has only 128GB of RAM which is insufficient for assembly completion). 
+One can request resources from two queues: serial long (Running the pipeline first for QC purposes) and bigmem (Running kmer analysis (Kmer-Analysis.sh - for determining estimated size, coverage and ploidy) and the rest of the pipeline as seriallong has only 128GB of RAM which is insufficient for assembly completion). 
 SerialLong job script:
 #!/bin/bash
 #PBS -I -P CBBI1622 -m abe -M setshaba.taukobong@diplomics.org.za -q seriallong -l select=1:ncpus=10:mpiprocs=10 -l walltime=140:00:00
