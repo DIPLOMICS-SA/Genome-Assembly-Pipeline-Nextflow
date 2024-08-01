@@ -128,7 +128,7 @@ process FASTQC1 {
 
     script:
     """
-    NanoPlot -t 8 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_1
+    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_1
     """
 
 }
@@ -152,7 +152,7 @@ process TRIM {
 
     script:
     """
-    NanoFilt -l 200 -q 10 --headcrop 10 --tailcrop 10 $sample_id > sample_id.trimmed.fastq
+    NanoFilt -q 10 $sample_id > sample_id.trimmed.fastq
     """
 }
 
@@ -175,7 +175,7 @@ process FASTQC2 {
 
     script:
     """
-    NanoPlot -t 8 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_2
+    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_2
     """
 
 }
@@ -199,11 +199,57 @@ process ASSEMBLY {
 
     script:
     """
-    flye --nano-raw $sample_id -o assembly --asm-coverage 30 -g 1.6g -t 20
+    flye --nano-raw $sample_id -o assembly --asm-coverage x -g x g -t 15
     """
 
 }
 
+/*
+ * Genome assembly assessment using Busco
+ */
+
+process BUSCOstat1 {
+    module 'busco/5.4.5'
+    debug true
+
+    publishDir("${params.outdir}/Busco_results", mode: 'copy')
+
+    input:
+    path lineage
+
+    output:
+    path 'Busco_outputs1'
+
+    script:
+    """
+    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs1 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    """
+
+}
+
+
+/*
+ * Assembly evaluation using QUAST
+ */
+
+process assemblyStats1 {
+    module 'quast/4.6.3'
+    debug true
+
+    publishDir("${params.outdir}/quast_report", mode: 'copy')
+
+    input:
+    path sample_id
+
+    output:
+    path 'Quast_output1'
+
+    script:
+    """
+    quast.py -t 15 -o Quast_output1 --gene-finding --eukaryote medaka_polished/consensus.fasta --fragmented
+    """
+
+}
 
 /*
  * Mapping the reads using minimap2
@@ -223,7 +269,7 @@ process MAPPINGS {
 
     script:
     """
-    minimap2 -ax map-ont -t 6 assembly/assembly.fasta sample_id.trimmed.fastq > sample_id.sam
+    minimap2 -ax map-ont -t 15 assembly/assembly.fasta sample_id.trimmed.fastq > sample_id.sam
     """
 
 }
@@ -246,7 +292,7 @@ process POLISH1 {
 
     script:
     """
-    racon -m 8 -x -8 -g -6 -w 500 -t 6 sample_id.trimmed.fastq sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
+    racon -m 8 -x -8 -g -6 -w 500 -t 15 sample_id.trimmed.fastq sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
     """
 
 }
@@ -255,7 +301,7 @@ process POLISH1 {
  * Genome assembly assessment using Busco
  */
 
-process BUSCOstat {
+process BUSCOstat2 {
     module 'busco/5.4.5'
     debug true
 
@@ -265,11 +311,11 @@ process BUSCOstat {
     path lineage
 
     output:
-    path 'Busco_outputs'
+    path 'Busco_outputs2'
 
     script:
     """
-    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs2 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
@@ -279,7 +325,7 @@ process BUSCOstat {
  * Assembly evaluation using QUAST
  */
 
-process assemblyStats {
+process assemblyStats2 {
     module 'quast/4.6.3'
     debug true
 
@@ -289,11 +335,11 @@ process assemblyStats {
     path sample_id
 
     output:
-    path 'Quast_output'
+    path 'Quast_output2'
 
     script:
     """
-    quast.py -t 40 -o Quast_output --gene-finding --eukaryote medaka_polished/consensus.fasta --fragmented
+    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote medaka_polished/consensus.fasta --fragmented
     """
 
 }
@@ -313,9 +359,11 @@ workflow {
     TRIM(CONVERT.out.fastq_files)
     FASTQC2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
+    BUSCOstat1(ASSEMBLY.out.Assembly_files)
+    assemblyStats1(ASSEMBLY.out.Assembly_files)
     MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
     POLISH1(TRIM.out.trimmed_fastq.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
-    BUSCOstat(POLISHMED.out.Polished_files2)
-    assemblyStats(POLISHMED.out.Polished_files2)
+    BUSCOstat2(POLISHMED.out.Polished_files2)
+    assemblyStats2(POLISHMED.out.Polished_files2)
 
 }
