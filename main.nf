@@ -56,6 +56,9 @@ if (params.help) {
 
 params.outdir = 'results'
 params.podsF = '/home/staukobong/pod5/'
+params.version = "1.0.0"
+params.busco_model = "/mnt/lustre/groups/CBBI1622/LINEAGES/lineage_files"
+
 
 pods_ch = Channel.fromPath(params.podsF, checkIfExists: true)
 
