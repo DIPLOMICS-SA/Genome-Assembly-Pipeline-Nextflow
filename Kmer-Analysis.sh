@@ -18,6 +18,8 @@
 
 module load chpc/BIOMODULES
 module load KMC
+module load python
+module load R
 
 pwd=/mnt/lustre/users/wmeyer1/output/
 file=$input
@@ -35,6 +37,7 @@ kmc_tools transform ${file}${kmer}mers histogram ${file}_kmer${kmer}_histo.txt
 # Currently runnig with Rstudio on local PC #
 #############################################
 
+R
 install.packages("ggplot2")
 library(ggplot2)
 
