@@ -60,6 +60,6 @@ to see the options for the workflow.
 
 The primary outputs of the pipeline include:
 * A fastq quality control report
-* 3 assembled fasta files (From Flye, Racon and Medaka)
-* A busco report
-* A quast quality report
+* 2 assembled fasta files (From Flye and Racon)
+* A busco report - The BUSCO score can be found on the species card
+* A quast quality report - The genome size can be found on the species card
