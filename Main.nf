@@ -292,7 +292,7 @@ process POLISH1 {
 
     script:
     """
-    racon -m 8 -x -8 -g -6 -w 500 -t 15 sample_id.trimmed.fastq sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
+    racon -m 8 -x -8 -g -6 -w 500 -t 15 $sample_id sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
     """
 
 }
@@ -315,7 +315,7 @@ process BUSCOstat2 {
 
     script:
     """
-    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs2 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -in Racon_polished.fasta -o Busco_outputs2 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
@@ -339,7 +339,7 @@ process assemblyStats2 {
 
     script:
     """
-    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote medaka_polished/consensus.fasta --fragmented
+    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote Racon_polished.fasta --fragmented
     """
 
 }
@@ -362,7 +362,7 @@ workflow {
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
     MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
-    POLISH1(TRIM.out.trimmed_fastq.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
+    POLISH1(fastfiles_ch.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
     BUSCOstat2(POLISHMED.out.Polished_files2)
     assemblyStats2(POLISHMED.out.Polished_files2)
 
