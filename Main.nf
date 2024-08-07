@@ -222,7 +222,7 @@ process BUSCOstat1 {
 
     script:
     """
-    busco -m genome -in medaka_polished/consensus.fasta -o Busco_outputs1 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -in assembly/assembly.fasta -o Busco_outputs1 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
@@ -246,7 +246,7 @@ process assemblyStats1 {
 
     script:
     """
-    quast.py -t 15 -o Quast_output1 --gene-finding --eukaryote medaka_polished/consensus.fasta --fragmented
+    quast.py -t 15 -o Quast_output1 --gene-finding --eukaryote assembly/assembly.fasta --fragmented
     """
 
 }
