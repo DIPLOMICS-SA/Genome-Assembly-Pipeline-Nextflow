@@ -5,7 +5,7 @@
 #  Wilku Meyer (wilku@cengen.co.za)  #
 ######################################
 ###################################################################################
-# K-mer count with KMC on chpc, Jellyfish will also work but KMC is much quicker  #
+# K-mer count with KMC and in-house R script on chpc  #
 ###################################################################################
 
 file=$input
