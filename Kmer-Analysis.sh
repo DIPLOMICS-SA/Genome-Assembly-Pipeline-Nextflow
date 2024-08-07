@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ######################################
 #   Raw read K-Mer analysis          #
 #  Wilku Meyer (wilku@cengen.co.za)  #
@@ -6,30 +8,11 @@
 # K-mer count with KMC on chpc, Jellyfish will also work but KMC is much quicker  #
 ###################################################################################
 
-#PBS -N kmc
-#PBS -q serial
-#PBS -P CBBI1615
-#PBS -l select=1:ncpus=21
-#PBS -l walltime=48:00:00
-#PBS -m abe
-#PBS -M wilku@cengen.co.za
-#PBS -e /mnt/lustre/users//wmeyer1/PBS_err
-#PBS -o /mnt/lustre/users/wmeyer1/PBS_out
-
-module load chpc/BIOMODULES
-module load KMC
-module load python
-module load R
-
-pwd=/mnt/lustre/users/wmeyer1/output/
 file=$input
 kmer=21
-cd ${pwd}
-mkdir -p $input
-cd ${pwd}$input
-echo "${file}_raw.fastq.gz" > total_number_bases.txt
-zcat /mnt/lustre/users/wmeyer1/raw/${file}_raw.fastq.gz | awk 'NR%4==2 {sum+=length($0)} END {print sum}' >> total_number_bases.txt
-kmc -cs1000 -k${kmer} -fq -t21 /mnt/lustre/users/wmeyer1/raw/${file}_raw.fastq.gz ${file}${kmer}mers ./                        #added -cs1000 incase there is an higher amount of coverage 
+echo "${file}reads_raw.fastq.gz" > total_number_bases.txt
+zcat /mnt/lustre/users/raw/${file}reads_raw.fastq.gz | awk 'NR%4==2 {sum+=length($0)} END {print sum}' >> total_number_bases.txt
+kmc -cs1000 -k${kmer} -fq -t21 /mnt/lustre/users/raw/${file}reads_raw.fastq.gz ${file}${kmer}mers ./                        #added -cs1000 incase there is an higher amount of coverage 
 kmc_tools transform ${file}${kmer}mers histogram ${file}_kmer${kmer}_histo.txt
 
 #############################################
