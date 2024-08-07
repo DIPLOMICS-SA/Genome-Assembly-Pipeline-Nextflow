@@ -56,7 +56,7 @@ def helpMessage(){
  */ 
 
 params.outdir = 'results'
-params.fastfiles = ''
+params.fastfiles = 'reads.fastq'
 
 fastfiles_ch = Channel.fromPath(params.fastfiles, checkIfExists: true)
 
@@ -237,7 +237,7 @@ process POLISH1 {
 
     script:
     """
-    racon -m 8 -x -8 -g -6 -t 15 sample_id.trimmed.fastq sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
+    racon -m 8 -x -8 -g -6 -t 15 $sample_id sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
     """
 
 }
@@ -305,7 +305,7 @@ workflow {
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
     MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
-    POLISH1(TRIM.out.trimmed_fastq.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
+    POLISH1(fastfiles_ch.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
     BUSCOstat2(POLISH1.out.Polished_files)
     assemblyStats2(POLISH1.out.Polished_files)
 
