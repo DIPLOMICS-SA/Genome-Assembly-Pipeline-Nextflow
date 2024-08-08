@@ -56,7 +56,7 @@ def helpMessage(){
  */ 
 
 params.outdir = 'results'
-params.fastfiles = 'reads.fastq'
+params.fastfiles = 'species_name_fastq_pass_con.fastq'
 
 fastfiles_ch = Channel.fromPath(params.fastfiles, checkIfExists: true)
 
@@ -65,20 +65,21 @@ fastfiles_ch = Channel.fromPath(params.fastfiles, checkIfExists: true)
  * Check quality of sequencing reads using FASTQC
  */
 
-process FASTQC1 {
+process NANOCHECK1 {
+    module 'nanoplot'
     debug true
 
-    publishDir("${params.outdir}/fastqc_before_trim", mode: 'copy')
+    publishDir("${params.outdir}/nanoplot_before_trim", mode: 'copy')
 
     input:
     path sample_id
 
     output:
-    path 'NanoPlot_FASTQC_1', emit: fastqc_files
+    path 'NanoPlot_CHECK_1', emit: nanoplot_files
 
     script:
     """
-    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_1
+    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_CHECK_1
     """
 
 }
@@ -110,20 +111,21 @@ process TRIM {
  * Check quality of sequencing reads using FASTQC
  */
 
-process FASTQC2 {
+process NANOCHECK2 {
+    module 'nanoplot'
     debug true
 
-    publishDir("${params.outdir}/fastqc_trim", mode: 'copy')
+    publishDir("${params.outdir}/nanoplot_after_trim", mode: 'copy')
 
     input:
     path sample_id
 
     output:
-    path 'NanoPlot_FASTQC_2', emit: fastqc_files2
+    path 'NanoPlot_CHECK_2', emit: fastqc_files2
 
     script:
     """
-    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_2
+    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_CHECK_2
     """
 
 }
@@ -134,6 +136,7 @@ process FASTQC2 {
  */
 
 process ASSEMBLY {
+    module 'flye/2.9'
     debug true
 
     publishDir("${params.outdir}/Flye_results", mode: 'copy')
@@ -146,17 +149,18 @@ process ASSEMBLY {
 
     script:
     """
-    flye --nano-raw $sample_id -o assembly --asm-coverage 40 -g 2.87g -t 15
+    flye --nano-raw $sample_id -o assembly --asm-coverage x -g x g -t 15
     """
 
 }
 
 
 /*
- * Genome assembly assessment using Busco
+ * Genome assembly assessment before polishing using Busco
  */
 
 process BUSCOstat1 {
+    module 'busco/5.4.5'
     debug true
 
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
@@ -169,17 +173,18 @@ process BUSCOstat1 {
 
     script:
     """
-    busco -i assembly/assembly.fasta -o Busco_outputs1 -m genome -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -i assembly/assembly.fasta -o Busco_outputs1 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
 
 
 /*
- * Assembly evaluation using QUAST
+ * Assembly evaluation before polishing using QUAST
  */
 
 process assemblyStats1 {
+    module 'quast/4.6.3'
     debug true
 
     publishDir("${params.outdir}/quast_report", mode: 'copy')
@@ -225,6 +230,7 @@ process MAPPINGS {
  */
 
 process POLISH1 {
+    module 'racon/1.5.0'
     debug true
 
     publishDir("${params.outdir}/Racon_results", mode: 'copy')
@@ -237,17 +243,17 @@ process POLISH1 {
 
     script:
     """
-    racon -m 8 -x -8 -g -6 -t 15 $sample_id sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
+    racon -m 3 -x -5 -g -4 -w 500 -t 15 $sample_id sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
     """
 
 }
 
-
 /*
- * Genome assembly assessment using Busco
+ * Genome assembly assessment after polishing using Busco
  */
 
 process BUSCOstat2 {
+    module 'busco/5.4.5'
     debug true
 
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
@@ -260,17 +266,18 @@ process BUSCOstat2 {
 
     script:
     """
-    busco -i Racon_polished.fasta -o Busco_outputs2 -m genome -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -i Racon_polished.fasta -o Busco_outputs2 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
 
 
 /*
- * Assembly evaluation using QUAST
+ * Assembly evaluation after polishing using QUAST
  */
 
 process assemblyStats2 {
+    module 'quast/4.6.3'
     debug true
 
     publishDir("${params.outdir}/quast_report", mode: 'copy')
@@ -297,16 +304,17 @@ process assemblyStats2 {
 */
 
 workflow {
-
-    FASTQC1(fastfiles_ch)
-    TRIM(fastfiles_ch)
-    FASTQC2(TRIM.out.trimmed_fastq)
+    BASECALL(pods_ch)
+    CONVERT(BASECALL.out.bamfiles_complete)
+    NANOCHECK1(CONVERT.out.fastq_files)
+    TRIM(CONVERT.out.fastq_files)
+    NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
     MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
     POLISH1(fastfiles_ch.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
-    BUSCOstat2(POLISH1.out.Polished_files)
-    assemblyStats2(POLISH1.out.Polished_files)
+    BUSCOstat2(POLISHMED.out.Polished_files2)
+    assemblyStats2(POLISHMED.out.Polished_files2)
 
 }
