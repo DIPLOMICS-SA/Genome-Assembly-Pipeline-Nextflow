@@ -1,6 +1,6 @@
 # 1KSA-Genome-Assembly-Pipeline-Nextflow
 This repository contains a nextflow pipeline for denovo genome assembly of long ONT reads.
-This pipeline was built to support the genome assembly and analysis of the 1KSA project - A pilot project aimed at sequencing and assembling indigenous South African species. Detailed step by step instructions on how to run this pipeline on the CHPC can be found under files, labelled Instructions.txt.
+This pipeline was built to support the genome assembly and analysis of the 1KSA project - A pilot project aimed at sequencing and assembling indigenous South African species. Detailed step by step instructions on how to run this pipeline on the CHPC can be on our zenodo page (link).
 
 # Introduction
 
@@ -60,6 +60,8 @@ to see the options for the workflow.
 
 The primary outputs of the pipeline include:
 * A fastq quality control report
+* A busco report before polishing 
+* A quast quality report before polishing 
 * 2 assembled fasta files (From Flye and Racon)
-* A busco report - The BUSCO score can be found on the species card
-* A quast quality report - The genome size can be found on the species card
+* A busco report after polishing - The BUSCO score can be found on the species card
+* A quast quality report after polishing - The genome size can be found on the species card
