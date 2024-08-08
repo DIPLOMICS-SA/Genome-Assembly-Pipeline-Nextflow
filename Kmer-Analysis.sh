@@ -10,9 +10,9 @@
 
 file=$input
 kmer=21
-echo "${file}reads_raw.fastq.gz" > total_number_bases.txt
-zcat /mnt/lustre/users/raw/${file}reads_raw.fastq.gz | awk 'NR%4==2 {sum+=length($0)} END {print sum}' >> total_number_bases.txt
-kmc -cs1000 -k${kmer} -fq -t21 /mnt/lustre/users/raw/${file}reads_raw.fastq.gz ${file}${kmer}mers ./                        #added -cs1000 incase there is an higher amount of coverage 
+echo "${file}species_name_fastq_pass_con.gz" > total_number_bases.txt
+zcat /mnt/lustre/users/raw/${file}species_name_fastq_pass_con.gz | awk 'NR%4==2 {sum+=length($0)} END {print sum}' >> total_number_bases.txt
+kmc -cs1000 -k${kmer} -fq -t21 /mnt/lustre/users/raw/${file}species_name_fastq_pass_con.gz ${file}${kmer}mers ./                        #added -cs1000 incase there is an higher amount of coverage 
 kmc_tools transform ${file}${kmer}mers histogram ${file}_kmer${kmer}_histo.txt
 
 #############################################
