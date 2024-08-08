@@ -114,21 +114,21 @@ process CONVERT {
  * Check quality of sequencing reads using FASTQC
  */
 
-process FASTQC1 {
+process NANOCHECK1 {
     module 'nanoplot'
     debug true
 
-    publishDir("${params.outdir}/fastqc_before_trim", mode: 'copy')
+    publishDir("${params.outdir}/nanoplot_before_trim", mode: 'copy')
 
     input:
     path sample_id
 
     output:
-    path 'NanoPlot_FASTQC_1', emit: fastqc_files
+    path 'NanoPlot_CHECK_1', emit: nanoplot_files
 
     script:
     """
-    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_1
+    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_CHECK_1
     """
 
 }
@@ -161,21 +161,21 @@ process TRIM {
  * Check quality of sequencing reads using FASTQC
  */
 
-process FASTQC2 {
+process NANOCHECK2 {
     module 'nanoplot'
     debug true
 
-    publishDir("${params.outdir}/fastqc_trim", mode: 'copy')
+    publishDir("${params.outdir}/nanoplot_after_trim", mode: 'copy')
 
     input:
     path sample_id
 
     output:
-    path 'NanoPlot_FASTQC_2', emit: fastqc_files2
+    path 'NanoPlot_CHECK_2', emit: fastqc_files2
 
     script:
     """
-    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_FASTQC_2
+    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_CHECK_2
     """
 
 }
@@ -205,7 +205,7 @@ process ASSEMBLY {
 }
 
 /*
- * Genome assembly assessment using Busco
+ * Genome assembly assessment before polishing using Busco
  */
 
 process BUSCOstat1 {
@@ -229,7 +229,7 @@ process BUSCOstat1 {
 
 
 /*
- * Assembly evaluation using QUAST
+ * Assembly evaluation before polishing using QUAST
  */
 
 process assemblyStats1 {
@@ -292,13 +292,13 @@ process POLISH1 {
 
     script:
     """
-    racon -m 8 -x -8 -g -6 -w 500 -t 15 $sample_id sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
+    racon -m 3 -x -5 -g -4 -w 500 -t 15 $sample_id sample_id.sam assembly/assembly.fasta > Racon_polished.fasta
     """
 
 }
 
 /*
- * Genome assembly assessment using Busco
+ * Genome assembly assessment after polishing using Busco
  */
 
 process BUSCOstat2 {
@@ -322,7 +322,7 @@ process BUSCOstat2 {
 
 
 /*
- * Assembly evaluation using QUAST
+ * Assembly evaluation after polishing using QUAST
  */
 
 process assemblyStats2 {
@@ -355,9 +355,9 @@ process assemblyStats2 {
 workflow {
     BASECALL(pods_ch)
     CONVERT(BASECALL.out.bamfiles_complete)
-    FASTQC1(CONVERT.out.fastq_files)
+    NANOCHECK1(CONVERT.out.fastq_files)
     TRIM(CONVERT.out.fastq_files)
-    FASTQC2(TRIM.out.trimmed_fastq)
+    NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
