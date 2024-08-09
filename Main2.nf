@@ -304,7 +304,7 @@ process assemblyStats2 {
 */
 
 workflow {
-    BASECALL(pods_ch)
+    BASECALL(fastfiles_ch)
     CONVERT(BASECALL.out.bamfiles_complete)
     NANOCHECK1(CONVERT.out.fastq_files)
     TRIM(CONVERT.out.fastq_files)
