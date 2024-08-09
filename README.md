@@ -47,7 +47,6 @@ module load R
 module load KMC
 module load nextflow/23.10.0-all
 ```
-
 The following models and databases need to be downloaded before running the pipeline:
 * Dorado:
 
