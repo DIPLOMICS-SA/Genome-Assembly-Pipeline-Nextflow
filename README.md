@@ -25,6 +25,8 @@ If basecalling was done on the sequencing machine, the main2.nf script can be us
 # Dependencies
 
 The following modules need to be loaded on the CHPC before running the pipeline:
+
+```
 * module purge
 * module load chpc/BIOMODULES
 * module load dorado
@@ -45,10 +47,16 @@ The following modules need to be loaded on the CHPC before running the pipeline:
 * module load KMC
 * module load nextflow/23.10.0-all
 
-The following models and databases need to be downloaded before running the pipeline:
-* Dorado: dorado download --model dna_r10.4.1_e8.2_400bps_hac@v4.2.0
-* Busco: busco --download eukaryota_odb10
+```
 
+The following models and databases need to be downloaded before running the pipeline:
+* Dorado:
+
+``` dorado download --model dna_r10.4.1_e8.2_400bps_hac@v4.2.0 ```
+
+* Busco:
+
+``` busco --download eukaryota_odb10 ```
 
 # Usage
 
