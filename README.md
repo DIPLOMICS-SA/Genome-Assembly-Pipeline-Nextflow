@@ -27,26 +27,25 @@ If basecalling was done on the sequencing machine, the main2.nf script can be us
 The following modules need to be loaded on the CHPC before running the pipeline:
 
 ```
-* module purge
-* module load chpc/BIOMODULES
-* module load dorado
-* module load samtools/1.9
-* module load nanoplot
-* module load nanofilt
-* module load flye/2.9
-* module load minimap2
-* module load racon/1.5.0
-* module load medaka/1.11.3
-* module load quast/4.6.3
-* module load quast/4.6.3
-* module load busco/5.4.5
-* module load bbmap/38.95
-* module load metaeuk
-* module load python
-* module load R
-* module load KMC
-* module load nextflow/23.10.0-all
-
+module purge
+module load chpc/BIOMODULES
+module load dorado
+module load samtools/1.9
+module load nanoplot
+module load nanofilt
+module load flye/2.9
+module load minimap2
+module load racon/1.5.0
+module load medaka/1.11.3
+module load quast/4.6.3
+module load quast/4.6.3
+module load busco/5.4.5
+module load bbmap/38.95
+module load metaeuk
+module load python
+module load R
+module load KMC
+module load nextflow/23.10.0-all
 ```
 
 The following models and databases need to be downloaded before running the pipeline:
