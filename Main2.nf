@@ -304,10 +304,8 @@ process assemblyStats2 {
 */
 
 workflow {
-    BASECALL(fastfiles_ch)
-    CONVERT(BASECALL.out.bamfiles_complete)
-    NANOCHECK1(CONVERT.out.fastq_files)
-    TRIM(CONVERT.out.fastq_files)
+    NANOCHECK1(fastfiles_ch)
+    TRIM(fastfiles_ch)
     NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
