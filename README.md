@@ -63,5 +63,5 @@ The primary outputs of the pipeline include:
 * A busco report before polishing 
 * A quast quality report before polishing 
 * 2 assembled fasta files (From Flye and Racon)
-* A busco report after polishing - The BUSCO score can be found on the species card
-* A quast quality report after polishing - The genome size can be found on the species card
+* A busco report after polishing - The BUSCO score from this report is documented on the species card
+* A quast quality report after polishing - The genome size from this report is documented on the species card
