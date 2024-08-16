@@ -38,7 +38,6 @@ module load minimap2
 module load racon/1.5.0
 module load medaka/1.11.3
 module load quast/4.6.3
-module load quast/4.6.3
 module load busco/5.4.5
 module load bbmap/38.95
 module load metaeuk
