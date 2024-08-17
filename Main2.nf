@@ -86,52 +86,6 @@ process NANOCHECK1 {
 
 
 /*
- * Trim fastq files after base calling using Nanofilt
- */
-
-process TRIM {
-    debug true
-
-    publishDir("${params.outdir}/trimmed_fastq", mode: 'copy')
-
-    input:
-    path sample_id
-
-    output:
-    path 'sample_id.trimmed.fastq', emit: trimmed_fastq
-
-    script:
-    """
-    NanoFilt -q 10 $sample_id > sample_id.trimmed.fastq
-    """
-}
-
-
-/*
- * Check quality of sequencing reads using FASTQC
- */
-
-process NANOCHECK2 {
-    module 'nanoplot'
-    debug true
-
-    publishDir("${params.outdir}/nanoplot_after_trim", mode: 'copy')
-
-    input:
-    path sample_id
-
-    output:
-    path 'NanoPlot_CHECK_2', emit: fastqc_files2
-
-    script:
-    """
-    NanoPlot -t 15 --fastq $sample_id --tsv_stats -o NanoPlot_CHECK_2
-    """
-
-}
-
-
-/*
  * Assemble the reads using FLYE
  */
 
@@ -305,8 +259,6 @@ process assemblyStats2 {
 
 workflow {
     NANOCHECK1(fastfiles_ch)
-    TRIM(fastfiles_ch)
-    NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
