@@ -87,7 +87,7 @@ process BASECALL {
 
 
 /*
- * Convert fastq files to bam files and concatenate the files
+ * Convert bam file to fastq file using samtools
  */
 
 
@@ -111,7 +111,7 @@ process CONVERT {
 
 
 /*
- * Check quality of sequencing reads using FASTQC
+ * Check quality of sequencing reads using NANOPLOT
  */
 
 process NANOCHECK1 {
