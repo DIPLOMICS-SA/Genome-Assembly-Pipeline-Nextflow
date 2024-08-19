@@ -62,7 +62,7 @@ fastfiles_ch = Channel.fromPath(params.fastfiles, checkIfExists: true)
 
 
 /*
- * Check quality of sequencing reads using FASTQC
+ * Check quality of sequencing reads using NANOPLOT
  */
 
 process NANOCHECK1 {
