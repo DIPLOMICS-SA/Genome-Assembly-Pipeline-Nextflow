@@ -306,6 +306,8 @@ process assemblyStats2 {
 
 workflow {
     NANOCHECK1(fastfiles_ch)
+    Trim(fastfiles_ch)
+    NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
