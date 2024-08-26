@@ -14,7 +14,7 @@ module load KMC
 
 set -e
 
-file=Spekboom_unfragmented.fastq
+file=Species_name.fastq
 kmer=21
 
 echo "${file}" > total_number_bases.txt
