@@ -1,28 +1,35 @@
 # 1KSA-Genome-Assembly-Pipeline-Nextflow
-This repository contains a nextflow pipeline for denovo genome assembly of long ONT reads.
-This pipeline was built to support the genome assembly and analysis of the 1KSA project - A pilot project aimed at sequencing and assembling indigenous South African species. Detailed step by step instructions on how to run this pipeline on the CHPC can be on our zenodo page (link).
+## Project Overview
+This guide provides instructions for using the 1KSA Nextflow pipeline to perform de novo genome assembly with Oxford Nanopore long-read sequencing data. Please note that the de novo assembly process generates a draft-level assembly.
+Purpose: This project supports the 1KSA initiative, focusing on sequencing and assembling indigenous South African species. The draft-level assembly serves as an essential layer of quality control, demonstrating that there are sufficient, high-quality data that can be used as a tool for biodiversity genomics. By contributing to biodiversity research, this work aims to tackle critical global challenges such as reducing food scarcity and protecting native species. Advances in biodiversity genomics empower researchers to combat threats to biodiversity and maintain genetic diversity. The initial phase of biodiversity research involves identifying and analyzing species to better understand ecosystems, their functions, and interdependencies, highlighting the importance of building reference genomes.
+1KSA website: https://www.1ksa.org.za
+Detailed instructions: https://zenodo.org/communities/1ksa/records?q=&l=list&p=1&s=10&sort=newest
 
-# Introduction
+# Workflow Components
 
-This workflow uses the following tools:
-* Dorado for basecalling
+The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 1):
+* KMC for counting of k-mers in DNA (done separately)
 * Samtools for converting bam files to fastq files
 * Nanoplot for quality check
 * Nanofilt for filtering and trimming
-* Flye for genome assembly
-* Racon for first round assembly polishing
-* Medaka for second round assembly polishing
-* BUSCO for assembly quality assessment
-* QUAST for assembly quality assessment
-* KMC for counting of k-mers in DNA
+* Flye v2.9 for genome assembly
+* Racon v1.5.0 for assembly polishing
+* BUSCO v5.4.5 for assembly quality assessment
+* QUAST v5.2.0 for assembly quality assessment
 
+The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
 
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/f8a896f93a1469db564ac9fc4a78bd26db588d3b/1KSA_assmbly_pipeline_07-03-2025.png)
+Figure 1: 1KSA Workflow 
 
-If basecalling was done on the sequencing machine, the main2.nf script can be used to run genome assembly once the fastq files have been concatenated. 
 
+# 1. CHPC login and Pipeline Download
+1.1 Login to the CHPC using your own user account
 
-# Dependencies
+Link to CHPC quick start guide: https://wiki.chpc.ac.za/quick:start
+
+``` ssh username@lengau.chpc.ac.za  ```
+
 
 The following modules need to be loaded on the CHPC before running the pipeline:
 
