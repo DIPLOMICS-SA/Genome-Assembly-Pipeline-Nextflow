@@ -17,7 +17,7 @@ This workflow uses the following tools:
 * KMC for counting of k-mers in DNA
 
 
-![Image Alt text](97d92b1b-f47a-4e23-adcd-27b8d0f559cb.jpg)
+![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/f8a896f93a1469db564ac9fc4a78bd26db588d3b/1KSA_assmbly_pipeline_07-03-2025.png)
 
 If basecalling was done on the sequencing machine, the main2.nf script can be used to run genome assembly once the fastq files have been concatenated. 
 
