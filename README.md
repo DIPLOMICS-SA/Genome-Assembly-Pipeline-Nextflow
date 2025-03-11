@@ -163,7 +163,7 @@ bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq     
 ```
 cat kmer21_K_mers.txt
 ```
-| Kmer analysis example output | Value          |  |
+| Kmer analysis example output | Value          |  
 |------------------------------|----------------|
 | Estimated Haploid Length     | 2 381.12 Mb    |
 | Estimated Coverage           | 36             | 
