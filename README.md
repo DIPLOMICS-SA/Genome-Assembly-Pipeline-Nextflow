@@ -43,13 +43,15 @@ kmer-Analysis.sh
 
 kmerPlot.R
 
-``` ## Navigate to the directory with the fastq data
-cd /path/to/folder/with/species/fastq/files                       #change the path
+```
+## Navigate to the directory with the fastq data
+cd /path/to/folder/with/species/fastq/files                       
               
 git clone https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow.git
 
 ## Navigate inside the folder with the pipeline:
-cd Genome-Assembly-Pipeline-Nextflow ```
+cd Genome-Assembly-Pipeline-Nextflow
+```
 
 The following modules need to be loaded on the CHPC before running the pipeline:
 
