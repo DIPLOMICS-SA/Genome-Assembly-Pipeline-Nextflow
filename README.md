@@ -261,25 +261,24 @@ When running the pipeline, modify the following parameters based on your k-mer a
 * Use a more specific dataset based on your organism type, such as, ```viriplantae_odb10``` for plants, or the appropriate lineage for your species.
 
 #### Table 1: Genome assembly pipeline parameters
-| Tool     | Parameter Description | Parameter Flag | Value/Notes |
-|----------|-----------------------|----------|----------|
-| NanoFilt    | Data 1                | Data 2   | Data 3   |
-| Row 2    | Data 4                | Data 5   | Data 6   |
-| Row 3    | Data 7                | Data 8   | Data 9   |
-| Row 4    | Data 10               | Data 11  | Data 12  |
-| Row 5    | Data 13  | Data 14  | Data 15  |
-| Row 6    | Data 16  | Data 17  | Data 18  |
-| Row 7    | Data 19  | Data 20  | Data 21  |
-| Row 8    | Data 22  | Data 23  | Data 24  |
-| Row 9    | Data 25  | Data 26  | Data 27  |
-| Row 10   | Data 28  | Data 29  | Data 30  |
-| Row 11   | Data 31  | Data 32  | Data 33  |
-| Row 12   | Data 34  | Data 35  | Data 36  |
-| Row 13   | Data 37  | Data 38  | Data 39  |
-| Row 14   | Data 40  | Data 41  | Data 42  |
-| Row 15   | Data 43  | Data 44  | Data 45  |
-| Row 16   | Data 46  | Data 47  | Data 48  |
-| Row 17   | Data 49  | Data 50  | Data 51  |
+| Tool     | Parameter Description          | Parameter Flag       | Value/Notes                 |
+|----------|--------------------------------|----------------------|-----------------------------|
+| NanoFilt | Quality                        | -q                   | 10                          |
+|          | Minimum read length            | -l                   | 1000                        |
+| Flye     | ONT regular reads (Q>10)       | --nano-raw           |                             |
+|          | ONT high-quality reads (Q>15)  | --nano-hq            |                             |
+|          | Threads                        | -t                   | 15                          |
+|          | Reduced coverage               | --asm-coverage       | (k-mer analysis) e.g. 36    |
+|          | Genome size                    | -g                   | (k-mer analysis) e.g. 2.4g  |
+| Racon    | Match                          | -m                   | 3                           |
+|          | Mismatch                       | -x                   | -5                          |
+|          | Gap                            | -g                   | -4                          |
+|          | Window length                  | -w                   | 500                         |
+|          | Threads                        | -t                   | 15                          |
+| BUSCO    | Database                       | -l                   | eukaryota_odb10             |
+|          | Mode                           | -m                   | genome                      |
+|          | Metaeuk gene predictor         | --metaeuk_parameters | METAEUK_PARAMETERS --offline|
+
 
 
 
