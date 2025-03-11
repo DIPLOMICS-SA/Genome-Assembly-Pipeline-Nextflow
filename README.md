@@ -30,7 +30,9 @@ Figure 1: 1KSA Workflow
 
 Link to CHPC quick start guide: https://wiki.chpc.ac.za/quick:start
 
-``` ssh username@lengau.chpc.ac.za ```
+``` 
+ssh username@lengau.chpc.ac.za
+```
 
 1.2 Clone the Pipeline Repository with all the necessary scripts:
 
@@ -156,6 +158,16 @@ cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow   
 bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq         #change the path
 ```
 
+#### 4.1.2 Record Genome Coverage and Size
+
+```
+cat kmer21_K_mers.txt
+```
+| Kmer analysis example output | Value          |  |
+|------------------------------|----------------|
+| Estimated Haploid Length     | 2 381.12 Mb    |
+| Estimated Coverage           | 36             | 
+| Expected Assembly Length     | 2 381.12 Mb    |
 
 # Workflow outputs
 
