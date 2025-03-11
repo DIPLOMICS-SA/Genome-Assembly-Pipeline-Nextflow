@@ -245,7 +245,41 @@ singularity {
 nextflow run Main.nf -with-timeline -offline
 ```
 
+#### Guidelines for Adjusting Assembly Parameters
+When running the pipeline, modify the following parameters based on your k-mer analysis and sequencing read quality:
 
+##### 1. Coverage and Genome Size
+* Set ```--flye_coverage``` and ```--flye_genome_size``` according to the k-mer analysis output.
+
+##### 2. Read Type Selection
+* Choose nano-raw for low-quality (Q > 10) nanopore reads.
+* Choose nano-hq for high-quality (Q > 15) nanopore reads.
+
+##### 3. BUSCO Lineage Selection
+* Select an appropriate BUSCO lineage dataset based on your organism:
+* Use ```eukaryota_odb10``` for general eukaryotic genomes.
+* Use a more specific dataset based on your organism type, such as, ```viriplantae_odb10``` for plants, or the appropriate lineage for your species.
+
+#### Table 1: Genome assembly pipeline parameters
+| Tool     | Parameter Description | Parameter Flag | Value/Notes |
+|----------|-----------------------|----------|----------|
+| NanoFilt    | Data 1                | Data 2   | Data 3   |
+| Row 2    | Data 4                | Data 5   | Data 6   |
+| Row 3    | Data 7                | Data 8   | Data 9   |
+| Row 4    | Data 10               | Data 11  | Data 12  |
+| Row 5    | Data 13  | Data 14  | Data 15  |
+| Row 6    | Data 16  | Data 17  | Data 18  |
+| Row 7    | Data 19  | Data 20  | Data 21  |
+| Row 8    | Data 22  | Data 23  | Data 24  |
+| Row 9    | Data 25  | Data 26  | Data 27  |
+| Row 10   | Data 28  | Data 29  | Data 30  |
+| Row 11   | Data 31  | Data 32  | Data 33  |
+| Row 12   | Data 34  | Data 35  | Data 36  |
+| Row 13   | Data 37  | Data 38  | Data 39  |
+| Row 14   | Data 40  | Data 41  | Data 42  |
+| Row 15   | Data 43  | Data 44  | Data 45  |
+| Row 16   | Data 46  | Data 47  | Data 48  |
+| Row 17   | Data 49  | Data 50  | Data 51  |
 
 
 
