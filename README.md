@@ -78,9 +78,19 @@ This workflow requires 3 screen sessions (Figure 2):
 * screen_3 (seriallong, 100 hours))
     * Evaluation with Quast and BUSCO
 
+![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/169aec45b0de1218a81849ab5a806afc4d053029/Figure_2.png)
 
+Figure 2. Overview of the 1KSA Draft Genome Assembly Pipeline processes
 
+## 3. Data Preparation
+### 3.1 Screen 1 (Quality Control)
+3.1.1 Start an interactive job in screen 1
 
+```
+screen -S screen_1
+
+qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBI1617 -l walltime=100:00:00   #change walltime
+```
 
 
 
