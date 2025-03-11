@@ -69,14 +69,14 @@ For this pipeline, resources will be requested from two queues on the CHPC: seri
 This workflow requires 3 screen sessions (Figure 2):
 
 * screen_1 (seriallong, 100 hours)
-*   Unzip and concatenate fastq.gz files
-*   Perform quality control (kmer analysis and filtering)
+    * Unzip and concatenate fastq.gz files
+    *  Perform quality control (kmer analysis and filtering)
 
 * screen_2 (bigmem, 48 hours)
-*   Genome assembly and polishing using Flye and Racon, respectively
+    * Genome assembly and polishing using Flye and Racon, respectively
 
 * screen_3 (seriallong, 100 hours))
-*   Evaluation with Quast and BUSCO
+    * Evaluation with Quast and BUSCO
 
 
 
