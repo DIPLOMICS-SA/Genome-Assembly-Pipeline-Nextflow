@@ -201,13 +201,13 @@ Change the following path and values:
 ```
 params {
     fastfiles = '/path/to/folder/with/species/fastq/files/species_fastq_pass_con.fastq'  // Mandatory input file
-    flye_coverage = '36'                                                                 // Mandatory coverage 
-    flye_genome_size = '2.38112g'                                                        // Mandatory genome size
-    lineage = 'eukaryota_odb10'                                                          // Mandatory BUSCO lineage
+    flye_coverage = '36'                                                               // Mandatory coverage 
+    flye_genome_size = '2.38112g'                                                      // Mandatory genome size
+    lineage = 'eukaryota_odb10'                                                        // Mandatory BUSCO lineage
 
     // Optional Parameters (leave empty or comment out if not needed)
-    flye_threads = 15                                                                     // Default number of threads
-    flye_reads = 'nano-raw'                                                               // Default read type
+    flye_threads = 15                                                                  // Default number of threads
+    flye_reads = 'nano-raw'                                                            // Default read type
 }
 
 process {
@@ -280,7 +280,258 @@ When running the pipeline, modify the following parameters based on your k-mer a
 |          | Metaeuk gene predictor         | --metaeuk_parameters | METAEUK_PARAMETERS --offline|
 
 
+Detach from screen_1: ```CRTL A+D```
 
+### 5.2 Screen 2 (Assembly & Polishing)
+
+When the pipeline runs out of memory (at the Flye step), switch over to a bigmem node and resume the pipeline (-resume) (screen_2).
+
+#### 5.2.1 Start the second screen session
+
+```
+screen -S screen_2
+
+## Navigate to your working directory
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+```
+
+#### 5.2.2 Create a Job Script (bigmem)
+
+```
+nano name_of_your_scrip_1.sh                          #change the name of the script
+```
+
+#### 5.2.3 Example Script Template (copy and paste)
+
+```
+#!/bin/bash
+#PBS -l select=1:ncpus=40                             #change ncpus if necessary
+#PBS -l walltime=48:00:00
+#PBS -q bigmem
+#PBS -P CBBXXXX                                       #change project number
+#PBS -o /path/to/your/working/directory/stdout.txt    #change path
+#PBS -e /path/to/your/working/directory/stderr.txt    #change path
+#PBS -M email@address.org.za                          #change email
+#PBS -m b
+
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
+
+nextflow run Main.nf \
+-with-timeline \
+-offline \
+-resume
+```
+
+#### 5.2.4 Save and submit the script
+
+```
+## Save and Exit
+^X  # Exit  
+y   # Confirm Save  
+Enter  
+
+## Submit job script  
+qsub name_of_your_script_1.sh
+```
+
+#### 5.2.5 If the wall time runs out, resubmit with the -resume option:
+
+```
+## Navigate to your working directory
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow    #change path
+
+## Submit your job script:  
+qsub name_of_your_scrip_1.sh
+```
+
+Detach from screen_2: ```CRTL A+D```
+
+### 5.3 Screen 3 (Evaluation)
+
+#### 5.3.1 If the wall time runs out and the assembly is complete, start the screen 3 session
+
+```
+screen -S screen_3
+
+## Navigate to your working directory
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  
+```
+
+#### 5.3.2 Create a job script (seriallong)
+
+```
+nano name_of_your_scrip_2.sh
+```
+
+#### 5.3.3 Example Script Template (copy and paste)
+
+```
+#!/bin/bash
+#PBS -l select=1:ncpus=12                             #change ncpus if necessary
+#PBS -l walltime=100:00:00
+#PBS -q seriallong
+#PBS -P CBBXXXX                                       #change project number
+#PBS -o /path/to/your/working/directory/stdout.txt    #change path
+#PBS -e /path/to/your/working/directory/stderr.txt    #change path
+#PBS -M email@address.org.za                          #change
+#PBS -m b
+
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
+
+nextflow run Main.nf \
+-with-timeline \
+-offline \
+-resume
+```
+
+#### 5.3.4 Save and submit the script
+
+```
+## Save and Exit
+^X  # Exit  
+y   # Confirm Save  
+Enter  
+
+## Submit job script  
+qsub name_of_your_script_2.sh
+```
+
+Detach from screen_3: ```CRTL A+D```
+
+## Generate a report of the assembly
+### 6.1 Screen 4
+
+#### 6.1.1 Start an interactive job in screen 4
+
+```
+## Navigate to your working directory
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+
+qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBI1617 -l walltime=48:00:00   #change walltime
+```
+
+#### 6.1.2 Rename the assembly output files and generate a single report
+
+```
+## Create a script
+nano your_script_name_3.sh
+```
+
+#### 6.1.3 Example Script Template (copy and paste)
+
+```
+#!/bin/bash
+species_name="sparadon_durbanensis"             #change species name here
+
+cd /path/to/results                             #change path to results directory
+
+###############################################################################################
+module load samtools
+
+## sort sam file first
+samtools view -bS ./sam_file/sample_id.sam | samtools sort -o ./sam_file/sample_id_sorted.bam
+
+samtools depth ./sam_file/sample_id_sorted.bam |
+awk '{sum+=$3} END { print "Average = ",sum/NR}' \
+> ./sam_file/minimap2_coverage.txt
+
+## Generate SAM statistics
+samtools stats ./sam_file/sample_id_sorted.bam |
+grep ^SN | cut -f 2- > ./sam_file/sam_stats.txt
+
+###############################################################################################
+## Get mean coverage from flye.log
+
+# Define output file
+OUTPUT_FILE="mean_coverage.txt"
+
+# Clear existing file
+> "$OUTPUT_FILE"
+
+# Debugging: Indicate script is running
+echo "Searching for flye.log files in ../work..."
+
+# Use a for loop to avoid read issues
+for logfile in $(find ../work -type f -path "*/assembly/flye.log"); do
+    echo "Processing: $logfile"  # Debugging output
+
+    # Extract mean coverage
+    mean_cov=$(grep "Mean coverage:" "$logfile" | awk '{print $3}')
+
+    # Ensure a value was found before appending
+    if [[ -n "$mean_cov" ]]; then
+        echo "$logfile: $mean_cov" | tee -a "$OUTPUT_FILE"
+    else
+        echo "Warning: No Mean coverage found in $logfile"
+    fi
+done
+
+echo "Done. Results saved in $OUTPUT_FILE."
+###############################################################################################
+## Rename and move report files
+
+mv ../total_number_bases.txt "${species_name}"_kmer_total_number_bases.txt
+mv ../kmer21_K_mers.txt "${species_name}"_kmer_cov_size.txt
+mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoStats.txt "${species_name}"_NanoStats_before_trim.txt
+mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoPlot-report.html "${species_name}"_NanoPlot_before_trim.html
+mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoStats.txt "${species_name}"_NanoStats_after_trim.txt
+mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoPlot-report.html "${species_name}"_NanoPlot_after_trim.html
+mv ./trimmed_fastq/sample_id.trimmed.fastq ./trimmed_fastq/"${species_name}"_filtered.fastq
+mv ./Flye_results/assembly/assembly.fasta ./Flye_results/assembly/"${species_name}"_flye_assembly.fasta
+mv ./Racon_results/Racon_polished.fasta ./Racon_results/"${species_name}"_racon_polished.fasta
+mv ./Busco_results/Busco_outputs1/short_summary.specific.eukaryota_odb10.Busco_outputs1.txt "${species_name}"_busco_summary_brefore_pol.txt
+mv ./quast_report/Quast_output1/report.txt "${species_name}"_quast_report_before_pol.txt	
+mv ./Busco_results/Busco_outputs2/short_summary.specific.eukaryota_odb10.Busco_outputs2.txt "${species_name}"_busco_summary_after_pol.txt
+mv ./quast_report/Quast_output2/report.txt "${species_name}"_quast_report_after_pol.txt
+mv ./sam_file/minimap2_coverage.txt "${species_name}"_minimap2_coverage.txt
+mv ./sam_file/sam_stats.txt "${species_name}"_sam_stats.txt
+mv ./mean_coverage.txt "${species_name}"_flye_mean_coverage.txt
+
+ordered_files=(
+    "${species_name}"_kmer_total_number_bases.txt
+    "${species_name}"_kmer_cov_size.txt
+    "${species_name}"_NanoStats_before_trim.txt
+    "${species_name}"_NanoStats_after_trim.txt
+    "${species_name}"_flye_mean_coverage.txt
+    "${species_name}"_minimap2_coverage.txt
+    "${species_name}"_sam_stats.txt
+    "${species_name}"_quast_report_before_pol.txt
+    "${species_name}"_busco_summary_brefore_pol.txt
+    "${species_name}"_quast_report_after_pol.txt
+    "${species_name}"_busco_summary_after_pol.txt
+    
+)
+
+## Add title and date at the top of the report
+echo "${species_name^} Assembly Report for RedCap" > "${species_name}"_report.txt
+echo "Generated on: $(date)" >> "${species_name}"_report.txt
+echo -e "\n========================================\n" >> "${species_name}"_report.txt
+
+## Generate final assembly report
+for file in "${ordered_files[@]}"; do
+    if [[ -f "$file" ]]; then
+        echo "========== $file ==========" >> "${species_name}"_report.txt
+        cat "$file" >> "${species_name}"_report.txt
+        echo -e "\n\n" >> "${species_name}"_report.txt
+    else
+        echo "WARNING: $file not found!" >&2
+    fi
+done
+
+echo "Report generated: ${species_name}_report.txt"
+```
+
+#### 6.1.4 Save and run the script
+
+```
+## Save and Exit
+^X  # Exit  
+y   # Confirm Save  
+Enter  
+
+## Run script  
+bash name_of_your_script_3.sh
+```
 
 # Workflow outputs
 
