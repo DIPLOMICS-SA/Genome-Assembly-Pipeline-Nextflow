@@ -35,16 +35,13 @@ Link to CHPC quick start guide: https://wiki.chpc.ac.za/quick:start
 
 1.2 Clone the Pipeline Repository with all the necessary scripts:
 
-Main.nf
-
-nextflow.config
-
-kmer-Analysis.sh
-
-kmerPlot.R
+* Main.nf
+* nextflow.config
+* kmer-Analysis.sh
+* kmerPlot.R
 
 ```
-## Navigate to the directory with the fastq data
+## Navigate to the directory with your fastq data
 cd /path/to/folder/with/species/fastq/files                       
               
 git clone https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow.git
@@ -52,6 +49,41 @@ git clone https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow.git
 ## Navigate inside the folder with the pipeline:
 cd Genome-Assembly-Pipeline-Nextflow
 ```
+
+1.3 Download the BUSCO Lineage Folder
+```
+module load busco/5.4.5
+busco --download eukaryota_odb10                                  #change database if necessary
+
+## Make sure the download was completed:
+ls ./busco_downloads/lineages/eukaryota_odb10                     #change database if necessary
+```
+
+## 2. CHPC PBS Session setup
+
+For this pipeline, resources will be requested from two queues on the CHPC: seriallong for initial quality control and bigmem for assembly and polishing.
+
+* Seriallong: 128 GB RAM, max wall time is 144 hours
+* Bigmem: 1 TB RAM, max wall time is 48 hours
+
+This workflow requires 3 screen sessions (Figure 2):
+
+* screen_1 (seriallong, 100 hours)
+*   Unzip and concatenate fastq.gz files
+*   Perform quality control (kmer analysis and filtering)
+
+* screen_2 (bigmem, 48 hours)
+*   Genome assembly and polishing using Flye and Racon, respectively
+
+* screen_3 (seriallong, 100 hours))
+*   Evaluation with Quast and BUSCO
+
+
+
+
+
+
+
 
 The following modules need to be loaded on the CHPC before running the pipeline:
 
