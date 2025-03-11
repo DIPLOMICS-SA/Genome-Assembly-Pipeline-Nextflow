@@ -194,9 +194,9 @@ nano nextflow.config
 #### 5.1.3: Edit the nextflow.config file
 
 Change the following path and values:
-* fastfiles = '/path/to/folder/with/species/fastq/files/species_fastq_pass_con.fastq'
-* flye_coverage = '36' (get value from kmer21_K_mers.txt)
-* flye_genome_size = '2.38112g' (get value from kmer21_K_mers.txt)
+* ```fastfiles``` = '/path/to/folder/with/species/fastq/files/species_fastq_pass_con.fastq'
+* ```flye_coverage``` = '36' (get value from kmer21_K_mers.txt)
+* ```flye_genome_size``` = '2.38112g' (get value from kmer21_K_mers.txt)
 
 ```
 params {
