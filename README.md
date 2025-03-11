@@ -12,7 +12,6 @@ Detailed instructions: https://zenodo.org/communities/1ksa/records?q=&l=list&p=1
 
 The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 1):
 * KMC for counting of k-mers in DNA (done separately)
-* Samtools for converting bam files to fastq files
 * Nanoplot for quality check
 * Nanofilt for filtering and trimming
 * Flye v2.9 for genome assembly
@@ -92,47 +91,71 @@ screen -S screen_1
 qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBI1617 -l walltime=100:00:00   #change walltime
 ```
 
-
-
-
-The following modules need to be loaded on the CHPC before running the pipeline:
+3.2.1 Concatenate FASTQ Files
 
 ```
-module purge
-module load chpc/BIOMODULES
-module load dorado
-module load samtools/1.9
-module load nanoplot
-module load nanofilt
-module load flye/2.9
-module load minimap2
-module load racon/1.5.0
-module load medaka/1.11.3
-module load quast/4.6.3
-module load busco/5.4.5
-module load bbmap/38.95
-module load metaeuk
-module load python
-module load R
-module load KMC
-module load genomescope
-module load smudgeplot
-module load nextflow/23.10.0-all
+## If you have not concatenated the fastq files, navigate to the folder (pass) and concatenate it:
+cd /path/to/folder/with/species/fastq/files                       #change the path
+cat *.fastq > species_name_fastq_pass_con.fastq                   #change the species_name
 ```
-The following models and databases need to be downloaded before running the pipeline:
-* Dorado:
 
-``` dorado download --model dna_r10.4.1_e8.2_400bps_hac@v4.2.0 ```
+3.3.1 Unzip Files (If Required)
 
-* Busco:
+```
+## If you need to unzip the files first, do the following:
+gunzip -d *.gz | cat *.fastq > species_name_fastq_pass_con.fastq  #change the species_name
+```
 
-``` busco --download eukaryota_odb10 ```
+## 4. K-mer Analysis
 
-# Usage
+### 4.1 Screen 1 (Quality Control)
 
-To obtain the workflow, having installed nextflow, users can run:
-* nextflow run main.nf --help
-to see the options for the workflow.
+This step is crucial for determining the read coverage and estimating the genome size, both of which are essential parameters for optimizing the Flye assembly process. Two scripts are used for this step, which is included in the Genome-Assembly-Pipeline-Nextflow repository:
+
+* kmer-analysis.sh
+* kmerPlot.R (used by the first script)
+
+This first script loads the necessary modules, calculates k-mer frequencies from a FASTQ file using KMC, generates a k-mer histogram, and runs an R script for k-mer frequency analysis on raw sequencing reads to estimate genome size, coverage, and ploidy.
+
+#### What it does:
+
+##### 1. K-mer Counting:
+* Uses KMC to count 21-mers (or other specified k-mer sizes) from input fastq reads.
+* Outputs a histogram of k-mer coverage vs frequency.
+
+##### 2. Total Bases Calculation:
+* Calculates the total number of bases from the input fastq file (sum of all sequence lengths).
+
+##### 3. Peak Detection:
+* Identifies coverage peaks in the k-mer histogram, which correspond to different ploidy levels (haploid, diploid, etc.).
+* Detects plateaus in the histogram to account for repetitive regions.
+
+##### 4. Genome Size Estimation:
+* Estimates genome size based on the position of peaks and total bases.
+* Outputs genome size in megabases (Mb).
+
+##### 5. Ploidy Inference:
+* Labels peaks as n (haploid), 2n (diploid), etc., based on their relative coverage.
+
+##### 6. Visualization:
+* Generates plots (PDF and PNG) of the k-mer histogram with annotated peaks and plateaus.
+
+##### Output files:
+* total_number_bases.txt
+* kmer21_histo.txt
+* kmer21_K_mers.txt
+* kmer21_K_mers.pdf
+* kmer21_k_mers.png
+
+#### 4.1.1 Run K-mer Analysis (continue in the interactive session in screen_1)
+
+```
+## Navigate to your working directory
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow       #change path 
+
+bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq         #change the path
+```
+
 
 # Workflow outputs
 
