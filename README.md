@@ -163,11 +163,77 @@ bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq     
 ```
 cat kmer21_K_mers.txt
 ```
-| Kmer analysis example output | Value          |  
+| Kmer analysis example output |                |  
 |------------------------------|----------------|
 | Estimated Haploid Length     | 2 381.12 Mb    |
 | Estimated Coverage           | 36             | 
 | Expected Assembly Length     | 2 381.12 Mb    |
+
+You will use this as input parameters when running the pipeline below.
+
+Download the .png and view on your local computer.
+
+## 5. Run the Nextflow Pipeline
+
+### 5.1 Screen 1 (Quality Control)
+
+#### 5.1.1 Re-attach to screen 1
+
+```
+screen -r screen_1
+## Navigate to your working directory
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+```
+
+#### 5.1.2 Open the nextflow.config file:
+
+```
+nano nextflow.config
+```
+
+#### 5.1.3: Edit the nextflow.config file:
+
+```
+params {
+    fastfiles = '/path/to/folder/with/species/fastq/files/species_fastq_pass_con.fastq'  // Mandatory input file
+    lineage = 'eukaryota_odb10'    // Mandatory BUSCO lineage
+    flye_coverage = '36'            // Mandatory coverage - get from kmer21_K_mers.txt
+    flye_genome_size = '2.38112g'   // Mandatory genome size - get from kmer21_K_mers.txt
+
+    // Optional Parameters (leave empty or comment out if not needed)
+    flye_threads = 15              // Default number of threads
+    flye_reads = 'nano-raw'        // Default read type
+}
+
+process {
+    beforeScript = '''
+        module purge
+        module load chpc/BIOMODULES
+        module load nextflow/24.04.4-all
+        module load samtools/1.9
+        module load nanoplot
+        module load nanofilt
+        module load flye/2.9
+        module load minimap2
+        module load racon/1.5.0
+        module load quast/5.2.0
+        module load busco/5.4.5
+        module load bbmap/38.95
+        module load metaeuk
+        module load python/3.9.6
+        module load smudgeplot
+        module load java/11.0.6
+        module load hmmer/3.3
+        export PYTHONHOME=/apps/chpc/bio/python/3.9.6
+        export PATH=$PYTHONHOME/bin:$PATH
+    '''
+}
+
+singularity {
+    enabled = true
+}
+```
+
 
 # Workflow outputs
 
