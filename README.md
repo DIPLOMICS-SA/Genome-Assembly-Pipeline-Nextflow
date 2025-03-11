@@ -398,7 +398,7 @@ qsub name_of_your_script_2.sh
 
 Detach from screen_3: ```CRTL A+D```
 
-## Generate a report of the assembly
+## Generate a report of the assembly metrics
 ### 6.1 Screen 4
 
 #### 6.1.1 Start an interactive job in screen 4
