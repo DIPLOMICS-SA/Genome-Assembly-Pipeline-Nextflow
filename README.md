@@ -8,7 +8,7 @@ Purpose: This project supports the 1KSA initiative, focusing on sequencing and a
 
 Detailed instructions: https://zenodo.org/communities/1ksa/records?q=&l=list&p=1&s=10&sort=newest
 
-# Workflow Components
+## Workflow Components
 
 The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 1):
 * KMC for counting of k-mers in DNA (done separately)
@@ -26,13 +26,30 @@ The starting point for this workflow is RAW fastq files, i.e. basecalling has al
 Figure 1: 1KSA Workflow 
 
 
-# 1. CHPC login and Pipeline Download
+## 1. CHPC login and Pipeline Download
 1.1 Login to the CHPC using your own user account
 
 Link to CHPC quick start guide: https://wiki.chpc.ac.za/quick:start
 
-``` ssh username@lengau.chpc.ac.za  ```
+``` ssh username@lengau.chpc.ac.za ```
 
+1.2 Clone the Pipeline Repository with all the necessary scripts:
+
+Main.nf
+
+nextflow.config
+
+kmer-Analysis.sh
+
+kmerPlot.R
+
+``` ## Navigate to the directory with the fastq data
+cd /path/to/folder/with/species/fastq/files                       #change the path
+              
+git clone https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow.git
+
+## Navigate inside the folder with the pipeline:
+cd Genome-Assembly-Pipeline-Nextflow ```
 
 The following modules need to be loaded on the CHPC before running the pipeline:
 
