@@ -151,7 +151,7 @@ process ASSEMBLY {
     path sample_id
 
     output:
-    path 'assembly', emit: Assembly_files
+    path 'assembly/assembly.fasta', emit: Assembly_files
 
     script:
     """
