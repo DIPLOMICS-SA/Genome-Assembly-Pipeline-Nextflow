@@ -6,7 +6,7 @@ nextflow.enable.dsl=2
 /*
  *
 ========================================================================================
-         GENASS: Genome Assembly Pipeline for Nanopore Sequencing Data 
+         Genome Assembly Pipeline for Nanopore Sequencing Data 
 ========================================================================================
  
 # Homepage / Documentation
@@ -56,7 +56,12 @@ def helpMessage(){
  */ 
 
 params.outdir = 'results'
-params.fastfiles = 'species_name_fastq_pass_con.fastq'
+params.fastfiles
+params.flye_threads
+params.flye_coverage
+params.flye_genome_size
+params.flye_reads
+params.lineage
 
 fastfiles_ch = Channel.fromPath(params.fastfiles, checkIfExists: true)
 
@@ -146,11 +151,15 @@ process ASSEMBLY {
     path sample_id
 
     output:
-    path 'assembly', emit: Assembly_files
+    path 'assembly/assembly.fasta', emit: Assembly_files
 
     script:
     """
-    flye --nano-raw $sample_id -o assembly --asm-coverage x -g x g -t 15
+    if [ -d "assembly" ]; then
+        flye --${params.flye_reads} $sample_id -o assembly --resume --asm-coverage ${params.flye_coverage} -g ${params.flye_genome_size} -t ${params.flye_threads}
+    else
+           flye --${params.flye_reads} $sample_id -o assembly --asm-coverage ${params.flye_coverage} -g ${params.flye_genome_size} -t ${params.flye_threads}
+    fi 
     """
 
 }
@@ -167,14 +176,14 @@ process BUSCOstat1 {
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
 
     input:
-    path lineage
+    path assembly_file
 
     output:
     path 'Busco_outputs1'
 
     script:
     """
-    busco -m genome -i assembly/assembly.fasta -o Busco_outputs1 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -i $assembly_file -o Busco_outputs1 -l ${params.lineage} --download_path ${workflow.projectDir}/busco_downloads --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
@@ -185,20 +194,20 @@ process BUSCOstat1 {
  */
 
 process assemblyStats1 {
-    module 'quast/4.6.3'
+    module 'quast/5.2.0'
     debug true
 
     publishDir("${params.outdir}/quast_report", mode: 'copy')
 
     input:
-    path sample_id
+    path assembly_file
 
     output:
     path 'Quast_output1'
 
     script:
     """
-    quast.py -t 15 -o Quast_output1 --gene-finding --eukaryote assembly/assembly.fasta --fragmented
+    quast.py -t 16 -o Quast_output1 --gene-finding --eukaryote $assembly_file --fragmented
     """
 
 }
@@ -214,14 +223,15 @@ process MAPPINGS {
     publishDir("${params.outdir}/sam_file", mode: 'copy')
 
     input:
-    path sample_id
+    path fastq_file
+    path assembly_file
 
     output:
     path 'sample_id.sam', emit: Mapped_files
 
     script:
     """
-    minimap2 -ax map-ont -t 15 assembly/assembly.fasta sample_id.trimmed.fastq > sample_id.sam
+    minimap2 -ax map-ont -t 15 $assembly_file $fastq_file > sample_id.sam
     """
 
 }
@@ -260,14 +270,14 @@ process BUSCOstat2 {
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
 
     input:
-    path lineage
+    path polished_assembly_file
 
     output:
     path 'Busco_outputs2'
 
     script:
     """
-    busco -m genome -i Racon_polished.fasta -o Busco_outputs2 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -i $polished_assembly_file -o Busco_outputs2 -l ${params.lineage} --download_path ${workflow.projectDir}/busco_downloads --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
@@ -278,20 +288,20 @@ process BUSCOstat2 {
  */
 
 process assemblyStats2 {
-    module 'quast/4.6.3'
+    module 'quast/5.2.0'
     debug true
 
     publishDir("${params.outdir}/quast_report", mode: 'copy')
 
     input:
-    path sample_id
+    path polished_assembly_file
 
     output:
     path 'Quast_output2'
 
     script:
     """
-    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote Racon_polished.fasta --fragmented
+    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote $polished_assembly_file --fragmented
     """
 
 }
@@ -306,14 +316,15 @@ process assemblyStats2 {
 
 workflow {
     NANOCHECK1(fastfiles_ch)
-    Trim(fastfiles_ch)
+    TRIM(fastfiles_ch)
     NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
-    MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
+    MAPPINGS(TRIM.out.trimmed_fastq, ASSEMBLY.out.Assembly_files)
     POLISH1(fastfiles_ch.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
-    BUSCOstat2(POLISH1.out.Polished_files2)
-    assemblyStats2(POLISH1.out.Polished_files2)
+    BUSCOstat2(POLISH1.out.Polished_files)
+    assemblyStats2(POLISH1.out.Polished_files)
 
 }
+
