@@ -56,7 +56,12 @@ def helpMessage(){
  */ 
 
 params.outdir = 'results'
-params.fastfiles = 'species_name_fastq_pass_con.fastq'
+params.fastfiles
+params.flye_threads
+params.flye_coverage
+params.flye_genome_size
+params.flye_reads
+params.lineage
 
 fastfiles_ch = Channel.fromPath(params.fastfiles, checkIfExists: true)
 
