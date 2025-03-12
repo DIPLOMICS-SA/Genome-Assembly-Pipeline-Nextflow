@@ -14,8 +14,15 @@ set -e
 module load R
 module load KMC
 
-file=Spekboom_unfragmented.fastq
-kmer=21
+# Check if input file is provided
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <input_file>"
+    exit 1
+fi
+
+# Input file
+file=$1
+kmer=21  # Set the k-mer size here
 
 echo "${file}" > total_number_bases.txt
 cat "${file}" | awk 'NR%4==2 {sum+=length($0)} END {print sum}' >> total_number_bases.txt
