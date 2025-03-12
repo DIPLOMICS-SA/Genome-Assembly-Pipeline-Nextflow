@@ -270,14 +270,14 @@ process BUSCOstat2 {
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
 
     input:
-    path lineage
+    path polished_assembly_file
 
     output:
     path 'Busco_outputs2'
 
     script:
     """
-    busco -m genome -i Racon_polished.fasta -o Busco_outputs2 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -i $polished_assembly_file -o Busco_outputs2 -l ${params.lineage} --download_path ${workflow.projectDir}/busco_downloads --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
