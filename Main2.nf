@@ -6,7 +6,7 @@ nextflow.enable.dsl=2
 /*
  *
 ========================================================================================
-         GENASS: Genome Assembly Pipeline for Nanopore Sequencing Data 
+         Genome Assembly Pipeline for Nanopore Sequencing Data 
 ========================================================================================
  
 # Homepage / Documentation
