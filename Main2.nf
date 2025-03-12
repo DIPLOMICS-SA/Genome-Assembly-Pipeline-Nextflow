@@ -194,7 +194,7 @@ process BUSCOstat1 {
  */
 
 process assemblyStats1 {
-    module 'quast/4.6.3'
+    module 'quast/5.2.0'
     debug true
 
     publishDir("${params.outdir}/quast_report", mode: 'copy')
