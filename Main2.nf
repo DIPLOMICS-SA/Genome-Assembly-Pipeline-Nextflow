@@ -155,7 +155,11 @@ process ASSEMBLY {
 
     script:
     """
-    flye --nano-raw $sample_id -o assembly --asm-coverage x -g x g -t 15
+    if [ -d "assembly" ]; then
+        flye --${params.flye_reads} $sample_id -o assembly --resume --asm-coverage ${params.flye_coverage} -g ${params.flye_genome_size} -t ${params.flye_threads}
+    else
+           flye --${params.flye_reads} $sample_id -o assembly --asm-coverage ${params.flye_coverage} -g ${params.flye_genome_size} -t ${params.flye_threads}
+    fi 
     """
 
 }
