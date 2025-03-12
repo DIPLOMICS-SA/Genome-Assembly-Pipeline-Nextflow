@@ -316,14 +316,15 @@ process assemblyStats2 {
 
 workflow {
     NANOCHECK1(fastfiles_ch)
-    Trim(fastfiles_ch)
+    TRIM(fastfiles_ch)
     NANOCHECK2(TRIM.out.trimmed_fastq)
     ASSEMBLY(TRIM.out.trimmed_fastq)
     BUSCOstat1(ASSEMBLY.out.Assembly_files)
     assemblyStats1(ASSEMBLY.out.Assembly_files)
-    MAPPINGS(TRIM.out.trimmed_fastq.combine(ASSEMBLY.out.Assembly_files))
+    MAPPINGS(TRIM.out.trimmed_fastq, ASSEMBLY.out.Assembly_files)
     POLISH1(fastfiles_ch.combine(MAPPINGS.out.Mapped_files.combine(ASSEMBLY.out.Assembly_files)))
-    BUSCOstat2(POLISH1.out.Polished_files2)
-    assemblyStats2(POLISH1.out.Polished_files2)
+    BUSCOstat2(POLISH1.out.Polished_files)
+    assemblyStats2(POLISH1.out.Polished_files)
 
 }
+
