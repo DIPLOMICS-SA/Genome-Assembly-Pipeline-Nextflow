@@ -176,7 +176,7 @@ process BUSCOstat1 {
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
 
     input:
-    path lineage
+    path assembly_file
 
     output:
     path 'Busco_outputs1'
