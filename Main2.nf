@@ -183,7 +183,7 @@ process BUSCOstat1 {
 
     script:
     """
-    busco -m genome -i assembly/assembly.fasta -o Busco_outputs1 -l eukaryota_odb10 --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -m genome -i $assembly_file -o Busco_outputs1 -l ${params.lineage} --download_path ${workflow.projectDir}/busco_downloads --metaeuk_parameters METAEUK_PARAMETERS --offline
     """
 
 }
