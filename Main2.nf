@@ -288,20 +288,20 @@ process BUSCOstat2 {
  */
 
 process assemblyStats2 {
-    module 'quast/4.6.3'
+    module 'quast/5.2.0'
     debug true
 
     publishDir("${params.outdir}/quast_report", mode: 'copy')
 
     input:
-    path sample_id
+    path polished_assembly_file
 
     output:
     path 'Quast_output2'
 
     script:
     """
-    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote Racon_polished.fasta --fragmented
+    quast.py -t 15 -o Quast_output2 --gene-finding --eukaryote $polished_assembly_file --fragmented
     """
 
 }
