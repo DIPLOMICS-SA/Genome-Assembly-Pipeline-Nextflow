@@ -223,14 +223,15 @@ process MAPPINGS {
     publishDir("${params.outdir}/sam_file", mode: 'copy')
 
     input:
-    path sample_id
+    path fastq_file
+    path assembly_file
 
     output:
     path 'sample_id.sam', emit: Mapped_files
 
     script:
     """
-    minimap2 -ax map-ont -t 15 assembly/assembly.fasta sample_id.trimmed.fastq > sample_id.sam
+    minimap2 -ax map-ont -t 15 $assembly_file $fastq_file > sample_id.sam
     """
 
 }
