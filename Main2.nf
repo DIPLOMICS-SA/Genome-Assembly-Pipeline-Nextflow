@@ -200,14 +200,14 @@ process assemblyStats1 {
     publishDir("${params.outdir}/quast_report", mode: 'copy')
 
     input:
-    path sample_id
+    path assembly_file
 
     output:
     path 'Quast_output1'
 
     script:
     """
-    quast.py -t 15 -o Quast_output1 --gene-finding --eukaryote assembly/assembly.fasta --fragmented
+    quast.py -t 16 -o Quast_output1 --gene-finding --eukaryote $assembly_file --fragmented
     """
 
 }
