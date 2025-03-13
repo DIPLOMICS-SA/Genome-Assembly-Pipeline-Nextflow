@@ -181,6 +181,7 @@ Download the .png and view on your local computer.
 
 ```
 screen -r screen_1
+
 ## Navigate to your working directory
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
 ```
