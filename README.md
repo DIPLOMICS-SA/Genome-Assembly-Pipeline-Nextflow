@@ -408,7 +408,7 @@ Detach from screen_3: ```CRTL A+D```
 ## Navigate to your working directory
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
 
-qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBI1617 -l walltime=48:00:00   #change walltime
+qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBI1617 -l walltime=100:00:00   #change walltime
 ```
 
 #### 6.1.2 Rename the assembly output files and generate a single report
