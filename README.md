@@ -374,7 +374,7 @@ nano name_of_your_scrip_2.sh
 #PBS -P CBBXXXX                                       #change project number
 #PBS -o /path/to/your/working/directory/stdout.txt    #change path
 #PBS -e /path/to/your/working/directory/stderr.txt    #change path
-#PBS -M email@address.org.za                          #change
+#PBS -M email@address.org.za                          #change email
 #PBS -m b
 
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
