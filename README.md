@@ -194,20 +194,20 @@ nano nextflow.config
 #### 5.1.3: Edit the nextflow.config file
 
 Change the following path and values:
-* ```fastfiles``` = '/path/to/folder/with/species/fastq/files/species_fastq_pass_con.fastq'
-* ```flye_coverage``` = '36' (get value from kmer21_K_mers.txt)
-* ```flye_genome_size``` = '2.38112g' (get value from kmer21_K_mers.txt)
+* ```fastfiles = '/path/to/species_fastq_pass_con.fastq'```
+* ```flye_coverage = '36' (get value from kmer21_K_mers.txt)```
+* ```flye_genome_size = '2.38112g' (get value from kmer21_K_mers.txt)```
 
 ```
 params {
-    fastfiles = '/path/to/folder/with/species/fastq/files/species_fastq_pass_con.fastq'  // Mandatory input file
-    flye_coverage = '36'                                                               // Mandatory coverage 
-    flye_genome_size = '2.38112g'                                                      // Mandatory genome size
-    lineage = 'eukaryota_odb10'                                                        // Mandatory BUSCO lineage
+    fastfiles = '/path/to/species_fastq_pass_con.fastq'  // Mandatory input file
+    flye_coverage = '36'                                 // Mandatory coverage 
+    flye_genome_size = '2.38112g'                        // Mandatory genome size
+    lineage = 'eukaryota_odb10'                          // Mandatory BUSCO lineage
 
     // Optional Parameters (leave empty or comment out if not needed)
-    flye_threads = 15                                                                  // Default number of threads
-    flye_reads = 'nano-raw'                                                            // Default read type
+    flye_threads = 15                                    // Default number of threads
+    flye_reads = 'nano-raw'                              // Default read type
 }
 
 process {
