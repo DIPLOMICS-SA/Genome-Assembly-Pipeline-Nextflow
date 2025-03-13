@@ -81,7 +81,7 @@ This workflow requires 3 screen sessions (Figure 2):
 
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/169aec45b0de1218a81849ab5a806afc4d053029/Figure_2.png)
 
-Figure 2. Overview of the 1KSA Draft Genome Assembly Pipeline processes
+Figure 2: 1KSA Workflow processes in different CHPC queues depending on capacity requirements
 
 ## 3. Data Preparation
 ### 3.1 Screen 1 (Quality Control)
