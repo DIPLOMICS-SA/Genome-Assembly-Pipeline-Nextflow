@@ -76,7 +76,7 @@ This workflow requires 3 screen sessions (Figure 2):
 * screen_2 (bigmem, 48 hours)
     * Genome assembly and polishing using Flye and Racon, respectively
 
-* screen_3 (seriallong, 100 hours))
+* screen_3 (seriallong, 100 hours)
     * Evaluation with Quast and BUSCO
 
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/169aec45b0de1218a81849ab5a806afc4d053029/Figure_2.png)
