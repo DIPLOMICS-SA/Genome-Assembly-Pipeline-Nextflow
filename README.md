@@ -90,7 +90,7 @@ Figure 2: 1KSA Workflow processes in different CHPC queues depending on capacity
 ```
 screen -S screen_1
 
-qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change walltime
+qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change project number
 ```
 
 3.2.1 Concatenate FASTQ Files
@@ -183,7 +183,7 @@ Download the .png and view on your local computer.
 screen -r screen_1
 
 ## Navigate to your working directory
-cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow      #change path
 ```
 
 #### 5.1.2 Open the nextflow.config file:
@@ -293,7 +293,7 @@ When the pipeline runs out of memory (at the Flye step), switch over to a bigmem
 screen -S screen_2
 
 ## Navigate to your working directory
-cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow      #change path
 ```
 
 #### 5.2.2 Create a Job Script (bigmem)
@@ -309,7 +309,7 @@ nano name_of_your_scrip_1.sh                          #change the name of the sc
 #PBS -l select=1:ncpus=40                             #change ncpus if necessary
 #PBS -l walltime=48:00:00
 #PBS -q bigmem
-#PBS -P CBBIXXXX                                       #change project number
+#PBS -P CBBIXXXX                                      #change project number
 #PBS -o /path/to/your/working/directory/stdout.txt    #change path
 #PBS -e /path/to/your/working/directory/stderr.txt    #change path
 #PBS -M email@address.org.za                          #change email
@@ -371,7 +371,7 @@ nano name_of_your_scrip_2.sh
 #PBS -l select=1:ncpus=12                             #change ncpus if necessary
 #PBS -l walltime=100:00:00
 #PBS -q seriallong
-#PBS -P CBBIXXXX                                       #change project number
+#PBS -P CBBIXXXX                                      #change project number
 #PBS -o /path/to/your/working/directory/stdout.txt    #change path
 #PBS -e /path/to/your/working/directory/stderr.txt    #change path
 #PBS -M email@address.org.za                          #change email
@@ -408,7 +408,7 @@ Detach from screen_3: ```CRTL A+D```
 ## Navigate to your working directory
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
 
-qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change walltime
+qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change project number
 ```
 
 #### 6.1.2 Rename the assembly output files and generate a single report
