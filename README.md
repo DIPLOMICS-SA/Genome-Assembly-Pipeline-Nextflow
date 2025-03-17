@@ -243,6 +243,7 @@ singularity {
 #### 5.1.4 Run the pipeline:
 
 ```
+module load nextflow/24.04.4-all
 nextflow run Main.nf -with-timeline -offline
 ```
 
