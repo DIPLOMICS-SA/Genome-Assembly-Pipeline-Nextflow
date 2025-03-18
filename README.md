@@ -93,7 +93,7 @@ screen -S screen_1
 qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change project number
 ```
 
-3.2.1 Concatenate FASTQ Files
+3.1.2 Concatenate FASTQ Files
 
 ```
 ## If you have not concatenated the fastq files, navigate to the folder (pass) and concatenate it:
@@ -101,7 +101,7 @@ cd /path/to/folder/with/species/fastq/files                       #change the pa
 cat *.fastq > species_name_fastq_pass_con.fastq                   #change the species_name
 ```
 
-3.3.1 Unzip Files (If Required)
+3.1.3 Unzip Files (If Required)
 
 ```
 ## If you need to unzip the files first, do the following:
