@@ -248,8 +248,15 @@ singularity {
     enabled = true
 }
 ```
+#### 5.1.4 Save the script
+```
+## Save and Exit
+^X  # Exit  
+y   # Confirm Save  
+Enter
+```
 
-#### 5.1.4 Run the pipeline:
+#### 5.1.5 Run the pipeline:
 
 ```
 module load nextflow/24.04.4-all
