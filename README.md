@@ -108,6 +108,12 @@ cat *.fastq > species_name_fastq_pass_con.fastq                   #change the sp
 gunzip -d *.gz | cat *.fastq > species_name_fastq_pass_con.fastq  #change the species_name
 ```
 
+```
+## If you struggle with file permissions:
+cat ./fastq_pass/*.gz > species_name_fastq_pass_con.fastq.gz
+gunzip -d species_name_fastq_pass_con.fastq.gz
+```
+
 ## 4. K-mer Analysis
 
 ### 4.1 Screen 1 (Quality Control)
