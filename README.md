@@ -153,9 +153,11 @@ This first script loads the necessary modules, calculates k-mer frequencies f
 
 ```
 ## Navigate to your working directory
-cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow       #change path 
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+#change path 
 
-bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq         #change path
+bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq
+#change path
 ```
 
 #### 4.1.2 Record Genome Coverage and Size
@@ -183,7 +185,8 @@ Download the .png and view on your local computer.
 screen -r screen_1
 
 ## Navigate to your working directory
-cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow      #change path
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
+#change path
 ```
 
 #### 5.1.2 Open the nextflow.config file:
