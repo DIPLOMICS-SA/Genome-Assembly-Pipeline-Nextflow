@@ -334,6 +334,7 @@ nano name_of_your_scrip_1.sh                          #change the name of the sc
 
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
 
+module load nextflow/24.04.4-all
 nextflow run Main.nf \
 -with-timeline \
 -offline \
@@ -396,6 +397,7 @@ nano name_of_your_scrip_2.sh
 
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
 
+module load nextflow/24.04.4-all
 nextflow run Main.nf \
 -with-timeline \
 -offline \
