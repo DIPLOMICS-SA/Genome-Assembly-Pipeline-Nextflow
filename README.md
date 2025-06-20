@@ -580,6 +580,7 @@ mv Racon_results "${species_name}"_other_results_outputs
 mv  "${species_name}"_other_results_outputs "${species_name}"
 
 ```
+<img width="816" alt="image" src="https://github.com/user-attachments/assets/53d6cc80-87d0-4d25-beb9-1162c4d710a7" />
 
 #### 6.1.4 Save and run the script
 
