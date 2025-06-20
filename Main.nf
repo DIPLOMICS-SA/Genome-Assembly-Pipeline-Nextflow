@@ -267,12 +267,12 @@ process POLISH1 {
 }
 
 /*
- * Genome assembly assessment after polishing using Busco
+ * Genome assembly assessment after polishing using Busco (via Singularity)
  */
 
 process BUSCOstat2 {
-    module 'busco/5.4.5'
     debug true
+    container '/home/apps/chpc/bio/busco/5.8.0/busco_v5.8.0_cv1.sif'
 
     publishDir("${params.outdir}/Busco_results", mode: 'copy')
 
@@ -284,7 +284,14 @@ process BUSCOstat2 {
 
     script:
     """
-    busco -m genome -i $polished_assembly_file -o Busco_outputs2 -l ${params.lineage} --download_path ${workflow.projectDir}/busco_downloads --metaeuk_parameters METAEUK_PARAMETERS --offline
+    busco -i $polished_assembly_file \\
+          -o Busco_outputs2 \\
+          -l ${params.lineage} \\
+          --metaeuk_parameters METAEUK_PARAMETERS \\
+          --offline \\
+          -m genome \\
+          --download_path ${workflow.projectDir}/busco_downloads \\
+          -c 12
     """
 
 }
