@@ -449,13 +449,16 @@ cd /path/to/results                             #change path to results director
 module load samtools
 
 ## sort sam file first
+echo "Sorting sam file"
 samtools view -bS ./sam_file/sample_id.sam | samtools sort -o ./sam_file/sample_id_sorted.bam
 
+echo "Calculating coverage"
 samtools depth ./sam_file/sample_id_sorted.bam |
 awk '{sum+=$3} END { print "Average = ",sum/NR}' \
 > ./sam_file/minimap2_coverage.txt
 
 ## Generate SAM statistics
+echo "Getting stats"
 samtools stats ./sam_file/sample_id_sorted.bam |
 grep ^SN | cut -f 2- > ./sam_file/sam_stats.txt
 
@@ -489,6 +492,8 @@ done
 echo "Done. Results saved in $OUTPUT_FILE."
 ###############################################################################################
 ## Rename and move report files
+mkdir "${species_name}"
+mkdir "${species_name}"_other_results_outputs
 
 mv ../total_number_bases.txt "${species_name}"_kmer_total_number_bases.txt
 mv ../kmer21_K_mers.txt "${species_name}"_kmer_cov_size.txt
@@ -496,13 +501,16 @@ mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoStats.txt "${species_name}"_NanoS
 mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoPlot-report.html "${species_name}"_NanoPlot_before_trim.html
 mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoStats.txt "${species_name}"_NanoStats_after_trim.txt
 mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoPlot-report.html "${species_name}"_NanoPlot_after_trim.html
-mv ./trimmed_fastq/sample_id.trimmed.fastq ./trimmed_fastq/"${species_name}"_filtered.fastq
-mv ./Flye_results/assembly/assembly.fasta ./Flye_results/assembly/"${species_name}"_flye_assembly.fasta
-mv ./Racon_results/Racon_polished.fasta ./Racon_results/"${species_name}"_racon_polished.fasta
-mv ./Busco_results/Busco_outputs1/short_summary.specific.eukaryota_odb10.Busco_outputs1.txt "${species_name}"_busco_summary_brefore_pol.txt
+
+mv ./trimmed_fastq/sample_id.trimmed.fastq ./"${species_name}"/"${species_name}"_trimmed.fastq
+mv ./Flye_results/assembly/assembly.fasta ./"${species_name}"/"${species_name}"_flye_assembly.fasta
+mv ./Racon_results/Racon_polished.fasta ./"${species_name}"/"${species_name}"_racon_polished.fasta
+
+mv ./Busco_output/Busco_outputs1/short_summary.specific.eukaryota_odb10.Busco_outputs1.txt "${species_name}"_busco_summary_brefore_pol.txt
 mv ./quast_report/Quast_output1/report.txt "${species_name}"_quast_report_before_pol.txt	
-mv ./Busco_results/Busco_outputs2/short_summary.specific.eukaryota_odb10.Busco_outputs2.txt "${species_name}"_busco_summary_after_pol.txt
+mv ./Busco_output/Busco_outputs2/short_summary.specific.eukaryota_odb10.Busco_outputs2.txt "${species_name}"_busco_summary_after_pol.txt
 mv ./quast_report/Quast_output2/report.txt "${species_name}"_quast_report_after_pol.txt
+
 mv ./sam_file/minimap2_coverage.txt "${species_name}"_minimap2_coverage.txt
 mv ./sam_file/sam_stats.txt "${species_name}"_sam_stats.txt
 mv ./mean_coverage.txt "${species_name}"_flye_mean_coverage.txt
@@ -539,6 +547,38 @@ for file in "${ordered_files[@]}"; do
 done
 
 echo "Report generated: ${species_name}_report.txt"
+
+# Move files in final folders:
+
+mv "${species_name}"_kmer_total_number_bases.txt "${species_name}"_other_results_outputs
+mv "${species_name}"_kmer_cov_size.txt "${species_name}"_other_results_outputs
+
+mv "${species_name}"_NanoStats_before_trim.txt "${species_name}"
+mv "${species_name}"_NanoPlot_before_trim.html "${species_name}"
+mv "${species_name}"_NanoStats_after_trim.txt "${species_name}"
+mv "${species_name}"_NanoPlot_after_trim.html "${species_name}"
+
+mv "${species_name}"_busco_summary_brefore_pol.txt "${species_name}"
+mv "${species_name}"_quast_report_before_pol.txt "${species_name}"	
+mv "${species_name}"_busco_summary_after_pol.txt "${species_name}"
+mv "${species_name}"_quast_report_after_pol.txt "${species_name}"
+
+mv "${species_name}"_minimap2_coverage.txt "${species_name}"_other_results_outputs
+mv "${species_name}"_sam_stats.txt "${species_name}"_other_results_outputs
+mv "${species_name}"_flye_mean_coverage.txt "${species_name}"_other_results_outputs
+
+
+mv nanoplot_before_trim "${species_name}"_other_results_outputs
+mv nanoplot_after_trim "${species_name}"_other_results_outputs
+mv Flye_results "${species_name}"_other_results_outputs
+mv quast_report  "${species_name}"_other_results_outputs
+mv Busco_output  "${species_name}"_other_results_outputs
+mv trimmed_fastq "${species_name}"_other_results_outputs
+mv sam_file "${species_name}"_other_results_outputs
+mv Racon_results "${species_name}"_other_results_outputs
+
+mv  "${species_name}"_other_results_outputs "${species_name}"
+
 ```
 
 #### 6.1.4 Save and run the script
