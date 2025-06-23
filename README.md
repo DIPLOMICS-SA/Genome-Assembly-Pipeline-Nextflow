@@ -232,7 +232,8 @@ process {
         module load minimap2
         module load racon/1.5.0
         module load quast/5.2.0
-        module load busco/5.4.5
+        module load busco/5.8.0
+        module load chpc/singularity
         module load bbmap/38.95
         module load metaeuk
         module load python/3.9.6
