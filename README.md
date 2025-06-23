@@ -53,8 +53,8 @@ cd Genome-Assembly-Pipeline-Nextflow
 
 1.3 Download the BUSCO Lineage Folder
 ```
-module load busco/5.4.5
-busco --download eukaryota_odb10                                  #change database if necessary
+module load busco/5.8.0
+singularity run $SIF busco --download eukaryota_odb10             #change database if necessary
 
 ## Make sure the download was completed:
 ls ./busco_downloads/lineages/eukaryota_odb10                     #change database if necessary
