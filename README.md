@@ -247,6 +247,8 @@ process {
 
 singularity {
     enabled = true
+    autoMounts = true
+    cacheDir = '/home/apps/chpc/bio/'
 }
 ```
 #### 5.1.4 Save the script
