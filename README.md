@@ -509,7 +509,7 @@ mv ./trimmed_fastq/sample_id.trimmed.fastq ./"${species_name}"/"${species_name}"
 mv ./Flye_results/assembly/assembly.fasta ./"${species_name}"/"${species_name}"_flye_assembly.fasta
 mv ./Racon_results/Racon_polished.fasta ./"${species_name}"/"${species_name}"_racon_polished.fasta
 
-mv ./Busco_output/Busco_outputs1/short_summary.specific.eukaryota_odb10.Busco_outputs1.txt "${species_name}"_busco_summary_brefore_pol.txt
+mv ./Busco_output/Busco_outputs1/short_summary.specific.eukaryota_odb10.Busco_outputs1.txt "${species_name}"_busco_summary_before_pol.txt
 mv ./quast_report/Quast_output1/report.txt "${species_name}"_quast_report_before_pol.txt	
 mv ./Busco_output/Busco_outputs2/short_summary.specific.eukaryota_odb10.Busco_outputs2.txt "${species_name}"_busco_summary_after_pol.txt
 mv ./quast_report/Quast_output2/report.txt "${species_name}"_quast_report_after_pol.txt
