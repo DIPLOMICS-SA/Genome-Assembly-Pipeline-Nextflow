@@ -180,6 +180,14 @@ cat kmer21_K_mers.txt
 You will use this as input parameters when running the pipeline below.
 
 Download the .png and view on your local computer.
+```
+# Open a new terminal and navigate to the Desktop
+cd Desktop
+# Copy the .png file to your local computer using rsync
+rsync -av username@lengau.chpc.ac.za:/path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow/kmer21_k_mers.png .
+# change username
+# Enter password
+```
 
 ## 5. Run the Nextflow Pipeline
 
