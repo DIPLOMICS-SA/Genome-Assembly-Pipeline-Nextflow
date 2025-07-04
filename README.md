@@ -535,7 +535,7 @@ ordered_files=(
     "${species_name}"_minimap2_coverage.txt
     "${species_name}"_sam_stats.txt
     "${species_name}"_quast_report_before_pol.txt
-    "${species_name}"_busco_summary_brefore_pol.txt
+    "${species_name}"_busco_summary_before_pol.txt
     "${species_name}"_quast_report_after_pol.txt
     "${species_name}"_busco_summary_after_pol.txt
     
@@ -569,7 +569,7 @@ mv "${species_name}"_NanoPlot_before_trim.html "${species_name}"
 mv "${species_name}"_NanoStats_after_trim.txt "${species_name}"
 mv "${species_name}"_NanoPlot_after_trim.html "${species_name}"
 
-mv "${species_name}"_busco_summary_brefore_pol.txt "${species_name}"
+mv "${species_name}"_busco_summary_before_pol.txt "${species_name}"
 mv "${species_name}"_quast_report_before_pol.txt "${species_name}"	
 mv "${species_name}"_busco_summary_after_pol.txt "${species_name}"
 mv "${species_name}"_quast_report_after_pol.txt "${species_name}"
