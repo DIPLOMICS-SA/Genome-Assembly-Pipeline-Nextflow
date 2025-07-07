@@ -583,7 +583,7 @@ mv nanoplot_before_trim "${species_name}"_other_results_outputs
 mv nanoplot_after_trim "${species_name}"_other_results_outputs
 mv Flye_results "${species_name}"_other_results_outputs
 mv quast_report  "${species_name}"_other_results_outputs
-mv Busco_output  "${species_name}"_other_results_outputs
+mv Busco_results  "${species_name}"_other_results_outputs
 mv trimmed_fastq "${species_name}"_other_results_outputs
 mv sam_file "${species_name}"_other_results_outputs
 mv Racon_results "${species_name}"_other_results_outputs
