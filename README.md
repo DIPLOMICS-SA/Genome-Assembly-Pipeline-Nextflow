@@ -53,6 +53,7 @@ cd Genome-Assembly-Pipeline-Nextflow
 
 1.3 Download the BUSCO Lineage Folder
 ```
+module load chpc/BIOMODULES
 module load busco/5.8.0
 singularity run $SIF busco --download eukaryota_odb10             #change database if necessary
 
@@ -270,6 +271,7 @@ Enter
 #### 5.1.5 Run the pipeline:
 
 ```
+module load chpc/BIOMODULES
 module load nextflow/24.04.4-all
 nextflow run Main.nf -with-timeline -offline
 ```
