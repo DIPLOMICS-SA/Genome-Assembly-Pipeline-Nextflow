@@ -16,7 +16,7 @@ The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the
 * Nanofilt for filtering and trimming
 * Flye v2.9 for genome assembly
 * Racon v1.5.0 for assembly polishing
-* BUSCO v5.4.5 for assembly quality assessment
+* BUSCO v5.8.0 for assembly quality assessment
 * QUAST v5.2.0 for assembly quality assessment
 
 The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
