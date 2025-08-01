@@ -14,7 +14,7 @@ The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the
 * KMC for counting of k-mers in DNA (done separately)
 * Nanoplot for quality check
 * Nanofilt for filtering and trimming
-* Flye v2.9 for genome assembly
+* Flye v2.9.5 for genome assembly
 * Racon v1.5.0 for assembly polishing
 * BUSCO v5.8.0 for assembly quality assessment
 * QUAST v5.2.0 for assembly quality assessment
@@ -36,10 +36,14 @@ ssh username@lengau.chpc.ac.za
 
 1.2 Clone the Pipeline Repository with all the necessary scripts:
 
-* Main.nf
-* nextflow.config
 * kmer-Analysis.sh
 * kmerPlot.R
+* master.sh
+* params.config
+* run_flye.sh
+* nextflow.config
+* 01_qc_and_trimming.nf
+* 02_polishing_and_eval.nf
 
 ```
 ## Navigate to the directory with your fastq data
@@ -204,61 +208,24 @@ cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
 #change path
 ```
 
-#### 5.1.2 Open the nextflow.config file:
+#### 5.1.2 Open the params.config file:
 
 ```
-nano nextflow.config
+nano params.config
 ```
 
-#### 5.1.3: Edit the nextflow.config file
+#### 5.1.3: Edit the params.config file
 
-Change the following path and values:
-* ```fastfiles = '/path/to/species_fastq_pass_con.fastq'```
-* ```flye_coverage = '36'``` (get value from kmer21_K_mers.txt)
-* ```flye_genome_size = '2.38112g'``` (get value from kmer21_K_mers.txt)
+Change the following values:
 
 ```
-params {
-    fastfiles = '/path/to/species_fastq_pass_con.fastq'  // Mandatory input file
-    flye_coverage = '36'                                 // Mandatory coverage 
-    flye_genome_size = '2.38112g'                        // Mandatory genome size
-    lineage = 'eukaryota_odb10'                          // Mandatory BUSCO lineage
+# File: params.config
 
-    // Optional Parameters (leave empty or comment out if not needed)
-    flye_threads = 15                                    // Default number of threads
-    flye_reads = 'nano-raw'                              // Default read type
-}
-
-process {
-    beforeScript = '''
-        module purge
-        module load chpc/BIOMODULES
-        module load nextflow/24.04.4-all
-        module load samtools/1.9
-        module load nanoplot
-        module load nanofilt
-        module load flye/2.9
-        module load minimap2
-        module load racon/1.5.0
-        module load quast/5.2.0
-        module load busco/5.8.0
-        module load chpc/singularity
-        module load bbmap/38.95
-        module load metaeuk
-        module load python/3.9.6
-        module load smudgeplot
-        module load java/11.0.6
-        module load hmmer/3.3
-        export PYTHONHOME=/apps/chpc/bio/python/3.9.6
-        export PATH=$PYTHONHOME/bin:$PATH
-    '''
-}
-
-singularity {
-    enabled = true
-    autoMounts = true
-    cacheDir = '/home/apps/chpc/bio/'
-}
+genome_size=2.38112g            # Mandatory genome size - adjust to the values obtained from the k-mer analysis
+flye_coverage=36                # Mandatory coverage - adjust to the values obtained from the k-mer analysis
+flye_threads=15                 # Default number of threads
+flye_read_type=nano-raw         # Default read type (can change to nano-hq for Q15 reads)
+lineage=eukaryota_odb10         # Mandatory BUSCO lineage
 ```
 #### 5.1.4 Save the script
 ```
@@ -273,14 +240,14 @@ Enter
 ```
 module load chpc/BIOMODULES
 module load nextflow/24.04.4-all
-nextflow run Main.nf -with-timeline -offline
+bash master.sh /path/to/fastq/file      # Change path
 ```
 
 #### Guidelines for Adjusting Assembly Parameters
 When running the pipeline, modify the following parameters based on your k-mer analysis and sequencing read quality:
 
 ##### 1. Coverage and Genome Size
-* Set ```--flye_coverage``` and ```--flye_genome_size``` according to the k-mer analysis output.
+* Set ```flye_coverage``` and ```genome_size``` according to the k-mer analysis output.
 
 ##### 2. Read Type Selection
 * Choose nano-raw for low-quality (Q > 10) nanopore reads.
@@ -315,7 +282,7 @@ Detach from screen_1: ```CRTL A+D```
 
 ### 5.2 Screen 2 (Assembly & Polishing)
 
-When the pipeline runs out of memory (at the Flye step), switch over to a bigmem node and resume the pipeline (-resume) (screen_2).
+When the pipeline runs out of memory (at the Flye step), switch over to a bigmem node and resume the pipeline using the exact same command you used to start the pipeline: bash master.sh /path/to/fastq/file (screen_2).
 
 #### 5.2.1 Start the second screen session
 
@@ -345,13 +312,17 @@ nano name_of_your_scrip_1.sh                          #change the name of the sc
 #PBS -M email@address.org.za                          #change email
 #PBS -m b
 
-cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
+#############################################################################################
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow   # change path
 
+fastq='/path/to/fastq/file'                                                     # change path
+#############################################################################################
+
+module load chpc/BIOMODULES
 module load nextflow/24.04.4-all
-nextflow run Main.nf \
--with-timeline \
--offline \
--resume
+
+bash master.sh $fastq
+
 ```
 
 #### 5.2.4 Save and submit the script
@@ -408,13 +379,16 @@ nano name_of_your_scrip_2.sh
 #PBS -M email@address.org.za                          #change email
 #PBS -m b
 
-cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow  #change path
+#############################################################################################
+cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow   # change path
 
+fastq='/path/to/fastq/file'                                                     # change path
+#############################################################################################
+
+module load chpc/BIOMODULES
 module load nextflow/24.04.4-all
-nextflow run Main.nf \
--with-timeline \
--offline \
--resume
+
+bash master.sh $fastq
 ```
 
 #### 5.3.4 Save and submit the script
@@ -454,143 +428,181 @@ nano your_script_name_3.sh
 
 ```
 #!/bin/bash
-species_name="sparadon_durbanensis"             #change species name here
+set -euo pipefail
 
-cd /path/to/results                             #change path to results directory
+# === USER INPUT ===
+species_name="sparadon_durbanensis"             # Change species name
+cd /path/to/results                              # Change to actual results folder
 
-###############################################################################################
+# === Load dependencies ===
+module load chpc/BIOMODULES
 module load samtools
 
-## sort sam file first
-echo "Sorting sam file"
-samtools view -bS ./sam_file/sample_id.sam | samtools sort -o ./sam_file/sample_id_sorted.bam
+################################################################################
+# PART 1 — SAMTOOLS PROCESSING
+################################################################################
 
-echo "Calculating coverage"
-samtools depth ./sam_file/sample_id_sorted.bam |
-awk '{sum+=$3} END { print "Average = ",sum/NR}' \
-> ./sam_file/minimap2_coverage.txt
+# Check input SAM file exists
+if [[ ! -f ./sam_file/sample_id.sam ]]; then
+    echo "❌ sample_id.sam not found in ./sam_file/"
+    exit 1
+fi
 
-## Generate SAM statistics
-echo "Getting stats"
-samtools stats ./sam_file/sample_id_sorted.bam |
-grep ^SN | cut -f 2- > ./sam_file/sam_stats.txt
+# Check if BAM file already exists
+if [[ -f ./sam_file/sample_id_sorted.bam ]]; then
+    echo "✅ sample_id_sorted.bam already exists, skipping sorting."
+else
+    echo "▶️ Sorting sample_id.sam into sample_id_sorted.bam..."
+    samtools view -bS ./sam_file/sample_id.sam | samtools sort -o ./sam_file/sample_id_sorted.bam
+fi
 
-###############################################################################################
-## Get mean coverage from flye.log
+# Check if coverage already calculated
+if [[ -f ./sam_file/minimap2_coverage.txt ]]; then
+    echo "✅ minimap2_coverage.txt already exists, skipping depth calculation."
+else
+    echo "▶️ Calculating depth coverage..."
+    samtools depth ./sam_file/sample_id_sorted.bam |
+        awk '{sum+=$3} END { print "Average = ",sum/NR}' \
+        > ./sam_file/minimap2_coverage.txt
+fi
 
-# Define output file
+# Check if stats already calculated
+if [[ -f ./sam_file/sam_stats.txt ]]; then
+    echo "✅ sam_stats.txt already exists, skipping stats generation."
+else
+    echo "▶️ Generating SAM stats..."
+    samtools stats ./sam_file/sample_id_sorted.bam |
+        grep ^SN | cut -f 2- > ./sam_file/sam_stats.txt
+fi
+
+################################################################################
+# PART 2 — Flye coverage from flye.log
+################################################################################
+
+echo "🔎 Searching for Flye log files..."
+
 OUTPUT_FILE="mean_coverage.txt"
+> "$OUTPUT_FILE"  # Clear output
 
-# Clear existing file
-> "$OUTPUT_FILE"
-
-# Debugging: Indicate script is running
-echo "Searching for flye.log files in ../work..."
-
-# Use a for loop to avoid read issues
-for logfile in $(find ../work -type f -path "*/assembly/flye.log"); do
-    echo "Processing: $logfile"  # Debugging output
-
-    # Extract mean coverage
+for logfile in $(find ./Flye_results -type f -path "*/flye.log"); do
+    echo "Processing $logfile..."
     mean_cov=$(grep "Mean coverage:" "$logfile" | awk '{print $3}')
-
-    # Ensure a value was found before appending
     if [[ -n "$mean_cov" ]]; then
         echo "$logfile: $mean_cov" | tee -a "$OUTPUT_FILE"
     else
-        echo "Warning: No Mean coverage found in $logfile"
+        echo "⚠️  Warning: No Mean coverage found in $logfile"
     fi
 done
 
-echo "Done. Results saved in $OUTPUT_FILE."
-###############################################################################################
-## Rename and move report files
-mkdir "${species_name}"
-mkdir "${species_name}"_other_results_outputs
+################################################################################
+# PART 3 — Rename + Collect Key Outputs
+################################################################################
 
-mv ../total_number_bases.txt "${species_name}"_kmer_total_number_bases.txt
-mv ../kmer21_K_mers.txt "${species_name}"_kmer_cov_size.txt
-mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoStats.txt "${species_name}"_NanoStats_before_trim.txt
-mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoPlot-report.html "${species_name}"_NanoPlot_before_trim.html
-mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoStats.txt "${species_name}"_NanoStats_after_trim.txt
-mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoPlot-report.html "${species_name}"_NanoPlot_after_trim.html
+mkdir -p "${species_name}"
+mkdir -p "${species_name}_other_results_outputs"
 
-mv ./trimmed_fastq/sample_id.trimmed.fastq ./"${species_name}"/"${species_name}"_trimmed.fastq
-mv ./Flye_results/assembly/assembly.fasta ./"${species_name}"/"${species_name}"_flye_assembly.fasta
-mv ./Racon_results/Racon_polished.fasta ./"${species_name}"/"${species_name}"_racon_polished.fasta
+echo "▶️ Renaming + moving key outputs..."
 
-mv ./Busco_results/Busco_outputs1/short_summary.specific.eukaryota_odb10.Busco_outputs1.txt "${species_name}"_busco_summary_before_pol.txt
-mv ./quast_report/Quast_output1/report.txt "${species_name}"_quast_report_before_pol.txt	
-mv ./Busco_results/Busco_outputs2/short_summary.specific.eukaryota_odb10.Busco_outputs2.txt "${species_name}"_busco_summary_after_pol.txt
-mv ./quast_report/Quast_output2/report.txt "${species_name}"_quast_report_after_pol.txt
+# Rename & move K-mer results (if exist)
+[[ -f ../total_number_bases.txt ]] && mv ../total_number_bases.txt "${species_name}_kmer_total_number_bases.txt"
+[[ -f ../kmer21_K_mers.txt ]] && mv ../kmer21_K_mers.txt "${species_name}_kmer_cov_size.txt"
 
-mv ./sam_file/minimap2_coverage.txt "${species_name}"_minimap2_coverage.txt
-mv ./sam_file/sam_stats.txt "${species_name}"_sam_stats.txt
-mv ./mean_coverage.txt "${species_name}"_flye_mean_coverage.txt
+# NanoPlot + NanoStats
+mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoStats.txt "${species_name}_NanoStats_before_trim.txt"
+mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoPlot-report.html "${species_name}_NanoPlot_before_trim.html"
+mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoStats.txt "${species_name}_NanoStats_after_trim.txt"
+mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoPlot-report.html "${species_name}_NanoPlot_after_trim.html"
+
+# Trimmed FASTQ
+mv ./trimmed_fastq/sample_id.trimmed.fastq ./"${species_name}"/"${species_name}_trimmed.fastq"
+
+# Assemblies
+mv ./Flye_results/assembly.fasta ./"${species_name}"/"${species_name}_flye_assembly.fasta"
+mv ./Racon_results/Racon_polished.fasta ./"${species_name}"/"${species_name}_racon_polished.fasta"
+
+# BUSCO results (using find to handle variable filenames)
+busco1=$(find ./Busco_results/Busco_outputs1/ -name "short_summary.specific.*.txt" | head -n1 || true)
+busco2=$(find ./Busco_results/Busco_outputs2/ -name "short_summary.specific.*.txt" | head -n1 || true)
+
+[[ -f "$busco1" ]] && mv "$busco1" "${species_name}_busco_summary_before_pol.txt"
+[[ -f "$busco2" ]] && mv "$busco2" "${species_name}_busco_summary_after_pol.txt"
+
+# QUAST reports
+mv ./quast_report/Quast_output1/report.txt "${species_name}_quast_report_before_pol.txt"
+mv ./quast_report/Quast_output2/report.txt "${species_name}_quast_report_after_pol.txt"
+
+# Coverage + stats
+mv ./sam_file/minimap2_coverage.txt "${species_name}_minimap2_coverage.txt"
+mv ./sam_file/sam_stats.txt "${species_name}_sam_stats.txt"
+mv ./mean_coverage.txt "${species_name}_flye_mean_coverage.txt"
+
+################################################################################
+# PART 4 — Compile Final Report
+################################################################################
 
 ordered_files=(
-    "${species_name}"_kmer_total_number_bases.txt
-    "${species_name}"_kmer_cov_size.txt
-    "${species_name}"_NanoStats_before_trim.txt
-    "${species_name}"_NanoStats_after_trim.txt
-    "${species_name}"_flye_mean_coverage.txt
-    "${species_name}"_minimap2_coverage.txt
-    "${species_name}"_sam_stats.txt
-    "${species_name}"_quast_report_before_pol.txt
-    "${species_name}"_busco_summary_before_pol.txt
-    "${species_name}"_quast_report_after_pol.txt
-    "${species_name}"_busco_summary_after_pol.txt
-    
+    "${species_name}_kmer_total_number_bases.txt"
+    "${species_name}_kmer_cov_size.txt"
+    "${species_name}_NanoStats_before_trim.txt"
+    "${species_name}_NanoStats_after_trim.txt"
+    "${species_name}_flye_mean_coverage.txt"
+    "${species_name}_minimap2_coverage.txt"
+    "${species_name}_sam_stats.txt"
+    "${species_name}_quast_report_before_pol.txt"
+    "${species_name}_busco_summary_before_pol.txt"
+    "${species_name}_quast_report_after_pol.txt"
+    "${species_name}_busco_summary_after_pol.txt"
 )
 
-## Add title and date at the top of the report
-echo "${species_name^} Assembly Report for RedCap" > "${species_name}"_report.txt
-echo "Generated on: $(date)" >> "${species_name}"_report.txt
-echo -e "\n========================================\n" >> "${species_name}"_report.txt
+echo "${species_name^} Assembly Report for RedCap" > "${species_name}_report.txt"
+echo "Generated on: $(date)" >> "${species_name}_report.txt"
+echo -e "\n========================================\n" >> "${species_name}_report.txt"
 
-## Generate final assembly report
 for file in "${ordered_files[@]}"; do
     if [[ -f "$file" ]]; then
-        echo "========== $file ==========" >> "${species_name}"_report.txt
-        cat "$file" >> "${species_name}"_report.txt
-        echo -e "\n\n" >> "${species_name}"_report.txt
+        echo "========== $file ==========" >> "${species_name}_report.txt"
+        cat "$file" >> "${species_name}_report.txt"
+        echo -e "\n\n" >> "${species_name}_report.txt"
     else
-        echo "WARNING: $file not found!" >&2
+        echo "⚠️ WARNING: $file not found!" >&2
     fi
 done
 
-echo "Report generated: ${species_name}_report.txt"
+echo "✅ Report generated: ${species_name}_report.txt"
 
-# Move files in final folders:
+################################################################################
+# PART 5 — Organize into Output Folders
+################################################################################
 
-mv "${species_name}"_kmer_total_number_bases.txt "${species_name}"_other_results_outputs
-mv "${species_name}"_kmer_cov_size.txt "${species_name}"_other_results_outputs
+mv "${species_name}_kmer_total_number_bases.txt" "${species_name}_other_results_outputs" 2>/dev/null || true
+mv "${species_name}_kmer_cov_size.txt" "${species_name}_other_results_outputs" 2>/dev/null || true
 
-mv "${species_name}"_NanoStats_before_trim.txt "${species_name}"
-mv "${species_name}"_NanoPlot_before_trim.html "${species_name}"
-mv "${species_name}"_NanoStats_after_trim.txt "${species_name}"
-mv "${species_name}"_NanoPlot_after_trim.html "${species_name}"
+mv "${species_name}_NanoStats_before_trim.txt" "${species_name}"
+mv "${species_name}_NanoPlot_before_trim.html" "${species_name}"
+mv "${species_name}_NanoStats_after_trim.txt" "${species_name}"
+mv "${species_name}_NanoPlot_after_trim.html" "${species_name}"
 
-mv "${species_name}"_busco_summary_before_pol.txt "${species_name}"
-mv "${species_name}"_quast_report_before_pol.txt "${species_name}"	
-mv "${species_name}"_busco_summary_after_pol.txt "${species_name}"
-mv "${species_name}"_quast_report_after_pol.txt "${species_name}"
+mv "${species_name}_busco_summary_before_pol.txt" "${species_name}" 2>/dev/null || true
+mv "${species_name}_quast_report_before_pol.txt" "${species_name}"
+mv "${species_name}_busco_summary_after_pol.txt" "${species_name}" 2>/dev/null || true
+mv "${species_name}_quast_report_after_pol.txt" "${species_name}"
 
-mv "${species_name}"_minimap2_coverage.txt "${species_name}"_other_results_outputs
-mv "${species_name}"_sam_stats.txt "${species_name}"_other_results_outputs
-mv "${species_name}"_flye_mean_coverage.txt "${species_name}"_other_results_outputs
+mv "${species_name}_minimap2_coverage.txt" "${species_name}_other_results_outputs"
+mv "${species_name}_sam_stats.txt" "${species_name}_other_results_outputs"
+mv "${species_name}_flye_mean_coverage.txt" "${species_name}_other_results_outputs"
 
+# Final move of all raw outputs
+mv nanoplot_before_trim "${species_name}_other_results_outputs"
+mv nanoplot_after_trim "${species_name}_other_results_outputs"
+mv Flye_results "${species_name}_other_results_outputs"
+mv quast_report  "${species_name}_other_results_outputs"
+mv Busco_results  "${species_name}_other_results_outputs"
+mv trimmed_fastq "${species_name}_other_results_outputs"
+mv sam_file "${species_name}_other_results_outputs"
+mv Racon_results "${species_name}_other_results_outputs"
 
-mv nanoplot_before_trim "${species_name}"_other_results_outputs
-mv nanoplot_after_trim "${species_name}"_other_results_outputs
-mv Flye_results "${species_name}"_other_results_outputs
-mv quast_report  "${species_name}"_other_results_outputs
-mv Busco_results  "${species_name}"_other_results_outputs
-mv trimmed_fastq "${species_name}"_other_results_outputs
-mv sam_file "${species_name}"_other_results_outputs
-mv Racon_results "${species_name}"_other_results_outputs
+mv "${species_name}_other_results_outputs" "${species_name}"
 
-mv  "${species_name}"_other_results_outputs "${species_name}"
 
 ```
 <img width="816" alt="image" src="https://github.com/user-attachments/assets/53d6cc80-87d0-4d25-beb9-1162c4d710a7" />
