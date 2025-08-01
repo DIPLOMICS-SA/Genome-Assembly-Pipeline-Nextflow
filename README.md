@@ -43,6 +43,7 @@ ssh username@lengau.chpc.ac.za
 * run_flye.sh
 * nextflow.config
 * 01_qc_and_trimming.nf
+* 01_eval_before_polishing.nf
 * 02_polishing_and_eval.nf
 
 ```
