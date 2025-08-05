@@ -13,7 +13,7 @@ Once sequencing is complete and your data has been transferred to the CHPC, refe
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_1.png)
 Figure 1: 1KSA Draft genome assembly decision tree
 
-## Workflow Components
+## Workflow Components: Flye genome assembly
 
 The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 1):
 * KMC for counting of k-mers in DNA (done separately)
@@ -26,7 +26,7 @@ The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the
 
 The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
 
-![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/f8a896f93a1469db564ac9fc4a78bd26db588d3b/1KSA_assmbly_pipeline_07-03-2025.png)
+![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_2.png)
 Figure 2: 1KSA Workflow for a Flye genome assembly
 
 
