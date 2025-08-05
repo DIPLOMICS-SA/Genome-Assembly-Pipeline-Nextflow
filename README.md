@@ -10,7 +10,8 @@ Detailed instructions: https://zenodo.org/communities/1ksa/records?q=&l=list&p=1
 
 ## Decision Tree
 After the completion of sequencing and your data has been transfered to the CHPC, consider the decision tree below to decide the way forward with your assembly method:
-
+![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_1.png)
+Figure 1: 1KSA Draft genome assembly decision tree
 
 ## Workflow Components
 
