@@ -8,6 +8,10 @@ Purpose: This project supports the 1KSA initiative, focusing on sequencing and a
 
 Detailed instructions: https://zenodo.org/communities/1ksa/records?q=&l=list&p=1&s=10&sort=newest
 
+## Decision Tree
+After the completion of sequencing and your data has been transfered to the CHPC, consider the decision tree below to decide the way forward with your assembly method:
+
+
 ## Workflow Components
 
 The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 1):
@@ -22,7 +26,7 @@ The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the
 The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
 
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/f8a896f93a1469db564ac9fc4a78bd26db588d3b/1KSA_assmbly_pipeline_07-03-2025.png)
-Figure 1: 1KSA Workflow 
+Figure 1: 1KSA Workflow for a Flye genome assembly
 
 
 ## 1. CHPC login and Pipeline Download
