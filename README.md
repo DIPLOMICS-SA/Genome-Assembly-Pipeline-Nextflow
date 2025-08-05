@@ -15,7 +15,7 @@ Figure 1: 1KSA Draft genome assembly decision tree
 
 ## Workflow Components: Flye genome assembly
 
-The 1KSA Genome Assembly Pipeline (built in nextflow) is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 1):
+The 1KSA Genome Assembly Pipeline is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 2):
 * KMC for counting of k-mers in DNA (done separately)
 * Nanoplot for quality check
 * Nanofilt for filtering and trimming
