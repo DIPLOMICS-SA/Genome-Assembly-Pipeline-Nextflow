@@ -1,6 +1,6 @@
 ##################################################
 #R script for K-mer analysis
-#Wilku Meyer 
+#Wilku Meyer
 #contact: wilku@cengen.ac.za
 ##################################################
 
