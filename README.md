@@ -27,7 +27,7 @@ The 1KSA Genome Assembly Pipeline is intended for use on the Centre for High Per
 
 The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
 
-![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_2.png)
+![Image Alt text](Figure_2.png)
 Figure 2: 1KSA Workflow
 
 
