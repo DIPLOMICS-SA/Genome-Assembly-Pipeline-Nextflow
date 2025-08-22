@@ -13,21 +13,22 @@ Once sequencing is complete and your data has been transferred to the CHPC, refe
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_1.png)
 Figure 1: 1KSA Draft genome assembly decision tree
 
-## Workflow Components: Flye genome assembly
+## Workflow Components:
 
 The 1KSA Genome Assembly Pipeline is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 2):
 * KMC for counting of k-mers in DNA (done separately)
 * Nanoplot for quality check
 * Nanofilt for filtering and trimming
-* Flye v2.9.5 for genome assembly
-* Racon v1.5.0 for assembly polishing
+* Flye v2.9.5 for genome assembly (genomes smaller than 3 Gb)
+* Racon v1.5.0 for assembly polishing (flye assembly only)
+* Hifiasm v0.24.0-r703 for genome assembly (genomes larger than 3 Gb)
 * BUSCO v5.8.0 for assembly quality assessment
 * QUAST v5.2.0 for assembly quality assessment
 
 The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
 
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_2.png)
-Figure 2: 1KSA Workflow for a Flye genome assembly
+Figure 2: 1KSA Workflow
 
 
 ## 1. CHPC login and Pipeline Download
@@ -46,10 +47,12 @@ ssh username@lengau.chpc.ac.za
 * master.sh
 * params.config
 * run_flye.sh
+* run_hifiasm.sh
 * nextflow.config
 * 01_qc_and_trimming.nf
-* 01_eval_before_polishing.nf
-* 02_polishing_and_eval.nf
+* 03_mapping.nf
+* 04_polishing.nf
+* 05_eval_final.nf
 
 ```
 ## Navigate to the directory with your fastq data
@@ -65,10 +68,10 @@ cd Genome-Assembly-Pipeline-Nextflow
 ```
 module load chpc/BIOMODULES
 module load busco/5.8.0
-singularity run $SIF busco --download eukaryota_odb10             #change database if necessary
+singularity run $SIF busco --download eukaryota_odb10             #change database if necessary (viriplantae_odb10; insecta_odb10)
 
 ## Make sure the download was completed:
-ls ./busco_downloads/lineages/eukaryota_odb10                     #change database if necessary
+ls ./busco_downloads/lineages/eukaryota_odb10                     #change database if necessary (viriplantae_odb10; insecta_odb10)
 ```
 
 ## 2. CHPC PBS Session setup
@@ -161,10 +164,11 @@ This first script loads the necessary modules, calculates k-mer frequencies f
 
 ##### Output files:
 * total_number_bases.txt
-* kmer21_histo.txt
-* kmer21_K_mers.txt
-* kmer21_K_mers.pdf
-* kmer21_k_mers.png
+* species_name_17_mers.kmc_suf
+* species_name_17_mers.kmc_pre
+* species_name_17_mers_histo.txt
+* species_name_k_mers.png
+* species_name_k_mers.pdf
 
 #### 4.1.1 Run K-mer Analysis (continue in the interactive session in screen_1)
 
@@ -173,20 +177,25 @@ This first script loads the necessary modules, calculates k-mer frequencies f
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
 #change path 
 
-bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq
+bash kmer-Analysis.sh /path/to/fastq/file/species_name_fastq_pass_con.fastq species_name
 #change path
+#change species_name
 ```
 
 #### 4.1.2 Record Genome Coverage and Size
 
 ```
-cat kmer21_K_mers.txt
+zless k_mers_Stats_species_name.txt
 ```
-| Kmer analysis example output |                |  
-|------------------------------|----------------|
-| Estimated Haploid Length     | 2 381.12 Mb    |
-| Estimated Coverage           | 36             | 
-| Expected Assembly Length     | 2 381.12 Mb    |
+Kmer analysis example output:
+```
+Species_name: k-mer= 17
+Total input bases 153410333621
+Peaks or Plateaus detected=2
+Ploidy= 2n =2n
+2n Genome Length=0.87 Gb at 176 X Coverage
+Expected Assembly Length if fully collapsed=0.87 Gb at 176 X Coverage
+```
 
 You will use this as input parameters when running the pipeline below.
 
@@ -195,7 +204,7 @@ Download the .png and view on your local computer.
 # Open a new terminal and navigate to the Desktop
 cd Desktop
 # Copy the .png file to your local computer using rsync
-rsync -av username@lengau.chpc.ac.za:/path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow/kmer21_k_mers.png .
+rsync -av username@lengau.chpc.ac.za:/path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow/species_name_k_mers.png .
 # change username
 # Enter password
 ```
@@ -227,12 +236,19 @@ Change the following values:
 ```
 # File: params.config
 
-genome_size=2.38112g            # Mandatory genome size - adjust to the values obtained from the k-mer analysis
-flye_coverage=36                # Mandatory coverage - adjust to the values obtained from the k-mer analysis
-flye_threads=15                 # Default number of threads
-flye_read_type=nano-raw         # Default read type (can change to nano-hq for Q15 reads)
-lineage=eukaryota_odb10         # Mandatory BUSCO lineage
+species_name='species_name'    # Change species_name
+assembler='hifiasm'            # Options: 'flye' or 'hifiasm'
+
+# Shared parameters
+threads=15
+LINEAGE='eukaryota_odb10'      #Mandatory BUSCO lineage (Other options: insecta_odb10, viridiplantae_odb10)
+
+# Flye-specific parameters (mandatory)
+genome_size='0.77g'            # Mandatory genome size - adjust to the values obtained from the k-mer analysis
+flye_coverage=45               # Mandatory coverage - adjust to the values obtained from the k-mer analysis
+flye_read_type='nano-raw'      # Default read type (can change to nano-hq for Q15 reads)
 ```
+
 #### 5.1.4 Save the script
 ```
 ## Save and Exit
@@ -262,7 +278,7 @@ When running the pipeline, modify the following parameters based on your k-mer a
 ##### 3. BUSCO Lineage Selection
 * Select an appropriate BUSCO lineage dataset based on your organism:
 * Use ```eukaryota_odb10``` for general eukaryotic genomes.
-* Use a more specific dataset based on your organism type, such as, ```viriplantae_odb10``` for plants, or the appropriate lineage for your species.
+* Use a more specific dataset based on your organism type, such as, ```viriplantae_odb10``` for plants, or insecta_odb10 for insects.
 
 #### Table 1: Genome assembly pipeline parameters
 | Tool     | Parameter Description          | Parameter Flag       | Value/Notes                 |
