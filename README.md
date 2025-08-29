@@ -466,17 +466,17 @@ module load samtools
 ################################################################################
 
 # Check input SAM file exists
-if [[ ! -f ./sam_file/sample_id.sam ]]; then
-    echo "❌ sample_id.sam not found in ./sam_file/"
+if [[ ! -f ./sam_file/${species_name}.sam ]]; then
+    echo "❌ ${species_name}.sam not found in ./sam_file/"
     exit 1
 fi
 
 # Check if BAM file already exists
-if [[ -f ./sam_file/sample_id_sorted.bam ]]; then
-    echo "✅ sample_id_sorted.bam already exists, skipping sorting."
+if [[ -f ./sam_file/${species_name}_sorted.bam ]]; then
+    echo "✅ ${species_name}_sorted.bam already exists, skipping sorting."
 else
-    echo "▶️ Sorting sample_id.sam into sample_id_sorted.bam..."
-    samtools view -bS ./sam_file/sample_id.sam | samtools sort -o ./sam_file/sample_id_sorted.bam
+    echo "▶️ Sorting ${species_name}.sam into ${species_name}_sorted.bam..."
+    samtools view -bS ./sam_file/${species_name}.sam | samtools sort -o ./sam_file/${species_name}_sorted.bam
 fi
 
 # Check if coverage already calculated
@@ -484,7 +484,7 @@ if [[ -f ./sam_file/minimap2_coverage.txt ]]; then
     echo "✅ minimap2_coverage.txt already exists, skipping depth calculation."
 else
     echo "▶️ Calculating depth coverage..."
-    samtools depth ./sam_file/sample_id_sorted.bam |
+    samtools depth ./sam_file/${species_name}_sorted.bam |
         awk '{sum+=$3} END { print "Average = ",sum/NR}' \
         > ./sam_file/minimap2_coverage.txt
 fi
@@ -494,7 +494,7 @@ if [[ -f ./sam_file/sam_stats.txt ]]; then
     echo "✅ sam_stats.txt already exists, skipping stats generation."
 else
     echo "▶️ Generating SAM stats..."
-    samtools stats ./sam_file/sample_id_sorted.bam |
+    samtools stats ./sam_file/${species_name}_sorted.bam |
         grep ^SN | cut -f 2- > ./sam_file/sam_stats.txt
 fi
 
@@ -502,20 +502,27 @@ fi
 # PART 2 — Flye coverage from flye.log
 ################################################################################
 
-echo "🔎 Searching for Flye log files..."
+if [[ -d ./Flye_results ]]; then
+    echo "🔎 Flye assembly detected — calculating coverage from flye.log..."
 
-OUTPUT_FILE="mean_coverage.txt"
-> "$OUTPUT_FILE"  # Clear output
+    OUTPUT_FILE="mean_coverage.txt"
+    > "$OUTPUT_FILE"  # Clear output
 
-for logfile in $(find ./Flye_results -type f -path "*/flye.log"); do
-    echo "Processing $logfile..."
-    mean_cov=$(grep "Mean coverage:" "$logfile" | awk '{print $3}')
-    if [[ -n "$mean_cov" ]]; then
-        echo "$logfile: $mean_cov" | tee -a "$OUTPUT_FILE"
-    else
-        echo "⚠️  Warning: No Mean coverage found in $logfile"
-    fi
-done
+    for logfile in $(find ./Flye_results -type f -path "*/flye.log"); do
+        echo "Processing $logfile..."
+        mean_cov=$(grep "Mean coverage:" "$logfile" | awk '{print $3}')
+        if [[ -n "$mean_cov" ]]; then
+            echo "$logfile: $mean_cov" | tee -a "$OUTPUT_FILE"
+        else
+            echo "⚠️  Warning: No Mean coverage found in $logfile"
+        fi
+    done
+
+    mv ./mean_coverage.txt "${species_name}_flye_mean_coverage.txt"
+
+else
+    echo "ℹ️ No Flye_results directory found — skipping Flye mean coverage calculation."
+fi
 
 ################################################################################
 # PART 3 — Rename + Collect Key Outputs
@@ -528,7 +535,7 @@ echo "▶️ Renaming + moving key outputs..."
 
 # Rename & move K-mer results (if exist)
 [[ -f ../total_number_bases.txt ]] && mv ../total_number_bases.txt "${species_name}_kmer_total_number_bases.txt"
-[[ -f ../kmer21_K_mers.txt ]] && mv ../kmer21_K_mers.txt "${species_name}_kmer_cov_size.txt"
+[[ -f ../k_mers_Stats_${species_name}.txt ]] && mv ../k_mers_Stats_${species_name}.txt "${species_name}_kmer_cov_size.txt"
 
 # NanoPlot + NanoStats
 mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoStats.txt "${species_name}_NanoStats_before_trim.txt"
@@ -537,27 +544,29 @@ mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoStats.txt "${species_name}_NanoSta
 mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoPlot-report.html "${species_name}_NanoPlot_after_trim.html"
 
 # Trimmed FASTQ
-mv ./trimmed_fastq/sample_id.trimmed.fastq ./"${species_name}"/"${species_name}_trimmed.fastq"
+mv ./trimmed_fastq/${species_name}.trimmed.fastq ./"${species_name}"
 
-# Assemblies
-mv ./Flye_results/assembly.fasta ./"${species_name}"/"${species_name}_flye_assembly.fasta"
-mv ./Racon_results/Racon_polished.fasta ./"${species_name}"/"${species_name}_racon_polished.fasta"
+# === Assembly results (Flye or Hifiasm) ===
+if [[ -d ./Flye_results ]]; then
+    echo "✅ Flye results detected"
+    mv ./Flye_results/${species_name}_assembly.fasta ./"${species_name}"/"${species_name}_flye_assembly.fasta"
+    mv ./Racon_results/${species_name}_Racon_polished.fasta ./"${species_name}"/"${species_name}_racon_polished.fasta"
+elif [[ -d ./Hifiasm_results ]]; then
+    echo "✅ Hifiasm results detected"
+    mv ./Hifiasm_results/${species_name}_ctg.fasta ./"${species_name}"/"${species_name}_hifiasm_assembly.fasta"
+else
+    echo "⚠️ WARNING: No Flye_results or Hifiasm_results folder found"
+fi
 
-# BUSCO results (using find to handle variable filenames)
-busco1=$(find ./Busco_results/Busco_outputs1/ -name "short_summary.specific.*.txt" | head -n1 || true)
-busco2=$(find ./Busco_results/Busco_outputs2/ -name "short_summary.specific.*.txt" | head -n1 || true)
-
-[[ -f "$busco1" ]] && mv "$busco1" "${species_name}_busco_summary_before_pol.txt"
-[[ -f "$busco2" ]] && mv "$busco2" "${species_name}_busco_summary_after_pol.txt"
+# BUSCO results
+mv ./Busco_results/Busco_output/short_summary.specific.*.txt "${species_name}"_busco_summary.txt
 
 # QUAST reports
-mv ./quast_report/Quast_output1/report.txt "${species_name}_quast_report_before_pol.txt"
-mv ./quast_report/Quast_output2/report.txt "${species_name}_quast_report_after_pol.txt"
+mv ./quast_report/Quast_result/report.txt "${species_name}"_quast_report.txt
 
 # Coverage + stats
 mv ./sam_file/minimap2_coverage.txt "${species_name}_minimap2_coverage.txt"
 mv ./sam_file/sam_stats.txt "${species_name}_sam_stats.txt"
-mv ./mean_coverage.txt "${species_name}_flye_mean_coverage.txt"
 
 ################################################################################
 # PART 4 — Compile Final Report
@@ -568,14 +577,16 @@ ordered_files=(
     "${species_name}_kmer_cov_size.txt"
     "${species_name}_NanoStats_before_trim.txt"
     "${species_name}_NanoStats_after_trim.txt"
-    "${species_name}_flye_mean_coverage.txt"
     "${species_name}_minimap2_coverage.txt"
     "${species_name}_sam_stats.txt"
-    "${species_name}_quast_report_before_pol.txt"
-    "${species_name}_busco_summary_before_pol.txt"
-    "${species_name}_quast_report_after_pol.txt"
-    "${species_name}_busco_summary_after_pol.txt"
+    "${species_name}"_quast_report.txt
+    "${species_name}"_busco_summary.txt
 )
+
+# Only add Flye coverage file if it exists
+if [[ -f "${species_name}_flye_mean_coverage.txt" ]]; then
+    ordered_files+=("${species_name}_flye_mean_coverage.txt")
+fi
 
 echo "${species_name^} Assembly Report for RedCap" > "${species_name}_report.txt"
 echo "Generated on: $(date)" >> "${species_name}_report.txt"
@@ -605,27 +616,26 @@ mv "${species_name}_NanoPlot_before_trim.html" "${species_name}"
 mv "${species_name}_NanoStats_after_trim.txt" "${species_name}"
 mv "${species_name}_NanoPlot_after_trim.html" "${species_name}"
 
-mv "${species_name}_busco_summary_before_pol.txt" "${species_name}" 2>/dev/null || true
-mv "${species_name}_quast_report_before_pol.txt" "${species_name}"
-mv "${species_name}_busco_summary_after_pol.txt" "${species_name}" 2>/dev/null || true
-mv "${species_name}_quast_report_after_pol.txt" "${species_name}"
+mv "${species_name}"_busco_summary.txt "${species_name}"
+mv "${species_name}"_quast_report.txt "${species_name}"
 
 mv "${species_name}_minimap2_coverage.txt" "${species_name}_other_results_outputs"
 mv "${species_name}_sam_stats.txt" "${species_name}_other_results_outputs"
 mv "${species_name}_flye_mean_coverage.txt" "${species_name}_other_results_outputs"
 
+# Only move Flye coverage if it exists
+[ -f "${species_name}_flye_mean_coverage.txt" ] && mv "${species_name}_flye_mean_coverage.txt" "${species_name}_other_results_outputs" 2>/dev/null || true
+
 # Final move of all raw outputs
 mv nanoplot_before_trim "${species_name}_other_results_outputs"
 mv nanoplot_after_trim "${species_name}_other_results_outputs"
-mv Flye_results "${species_name}_other_results_outputs"
+mv Flye_results "${species_name}_other_results_outputs" 2>/dev/null || true
 mv quast_report  "${species_name}_other_results_outputs"
 mv Busco_results  "${species_name}_other_results_outputs"
+mv Hifiasm_results "${species_name}_other_results_outputs" 2>/dev/null || true
 mv trimmed_fastq "${species_name}_other_results_outputs"
 mv sam_file "${species_name}_other_results_outputs"
-mv Racon_results "${species_name}_other_results_outputs"
-
-mv "${species_name}_other_results_outputs" "${species_name}"
-
+mv Racon_results "${species_name}_other_results_outputs" 2>/dev/null || true
 
 ```
 <img width="816" alt="image" src="https://github.com/user-attachments/assets/53d6cc80-87d0-4d25-beb9-1162c4d710a7" />
