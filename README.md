@@ -69,10 +69,10 @@ cd Genome-Assembly-Pipeline-Nextflow
 ```
 module load chpc/BIOMODULES
 module load busco/5.8.0
-singularity run $SIF busco --download eukaryota_odb10             #change database if necessary (viriplantae_odb10; insecta_odb10)
+singularity run $SIF busco --download eukaryota_odb10             #change database if necessary (viridiplantae_odb10; insecta_odb10)
 
 ## Make sure the download was completed:
-ls ./busco_downloads/lineages/eukaryota_odb10                     #change database if necessary (viriplantae_odb10; insecta_odb10)
+ls ./busco_downloads/lineages/eukaryota_odb10                     #change database if necessary (viridiplantae_odb10; insecta_odb10)
 ```
 
 ## 2. CHPC PBS Session setup
@@ -279,7 +279,7 @@ When running the pipeline, modify the following parameters based on your k-mer a
 ##### 3. BUSCO Lineage Selection
 * Select an appropriate BUSCO lineage dataset based on your organism:
 * Use ```eukaryota_odb10``` for general eukaryotic genomes.
-* Use a more specific dataset based on your organism type, such as, ```viriplantae_odb10``` for plants, or insecta_odb10 for insects.
+* Use a more specific dataset based on your organism type, such as, ```viridiplantae_odb10``` for plants, or insecta_odb10 for insects.
 
 #### Table 1: Genome assembly pipeline parameters
 | Tool     | Parameter Description          | Parameter Flag       | Value/Notes                 |
