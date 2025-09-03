@@ -26,7 +26,7 @@ kmer=17  # Set the k-mer size here
 species=$2 
 echo "${file}" > total_number_bases.txt
 cat "${file}" | awk 'NR%4==2 {sum+=length($0)} END {print sum}' >> total_number_bases.txt &
-kmc  -cs1000 -m64 -sm -ci3 -k${kmer} -fq -t7 ${file} ${species}_${kmer}_mers .
+kmc  -cs1000 -m24 -sm -ci3 -k${kmer} -fq -t7 ${file} ${species}_${kmer}_mers .
 kmc_tools transform ${species}_${kmer}_mers histogram ${species}_${kmer}_mers_histo.txt
 wait
 # Run R script
