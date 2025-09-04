@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-READS=${1:?Provide FASTQ}   # Trimmed FASTQ file
 SPECIES_NAME=${2:?Provide species name}
 THREADS=${3:-16}
 
@@ -9,7 +8,13 @@ module purge
 module load chpc/BIOMODULES
 module load hifiasm/0.24.0-r703
 
-READS=$(realpath "$READS")
+# Path to trimmed FASTQ
+TRIMMED=$(realpath "results/trimmed_fastq/${SPECIES_NAME}.trimmed.fastq")
+
+if [[ ! -f "$TRIMMED" ]]; then
+    echo "  ERROR: Trimmed FASTQ file not found at $TRIMMED"
+    exit 1
+fi
 
 OUTDIR=$(realpath "results/Hifiasm_results")
 mkdir -p "$OUTDIR"
@@ -23,7 +28,7 @@ if [[ -f ${SPECIES_NAME}.bp.p_ctg.gfa ]]; then
 fi
 
 echo "🚀 Running Hifiasm..."
-hifiasm -t "$THREADS" --ont "$READS" -o "$SPECIES_NAME" > "$LOG" 2>&1
+hifiasm -t "$THREADS" --ont "$TRIMMED" -o "$SPECIES_NAME" > "$LOG" 2>&1
 
 # Convert GFA to FASTA with species name prefix
 for file in ${SPECIES_NAME}.bp.p_ctg.gfa ${SPECIES_NAME}.bp.hap1.p_ctg.gfa ${SPECIES_NAME}.bp.hap2.p_ctg.gfa; do
