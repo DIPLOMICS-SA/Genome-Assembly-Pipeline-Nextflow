@@ -610,7 +610,7 @@ mv nanoplot_before_trim nanoplot_after_trim quast_report Busco_results trimmed_f
 echo "🎉 All done!"
 
 ```
-<img width="816" alt="image" src="https://github.com/user-attachments/assets/53d6cc80-87d0-4d25-beb9-1162c4d710a7" />
+![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_4.png)
 
 #### 6.1.4 Save and run the script
 
