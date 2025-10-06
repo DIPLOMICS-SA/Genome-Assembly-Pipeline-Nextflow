@@ -5,7 +5,6 @@ params.lineage = params.lineage ?: 'eukaryota_odb10'
 params.species_name = params.species_name ?: 'unknown_species'
 
 process BUSCOstat_final {
-    container '/home/apps/chpc/bio/busco/5.8.0/busco_v5.8.0_cv1.sif'
     publishDir "results/Busco_results", mode: 'copy'
     input:
     path assembly_file
@@ -24,7 +23,6 @@ process BUSCOstat_final {
 }
 
 process QUAST_final {
-    module 'quast/5.2.0'
     publishDir "results/quast_report", mode: 'copy'
     input:
     path assembly_file
@@ -32,7 +30,7 @@ process QUAST_final {
     path 'Quast_result', emit: quast_results
     script:
     """
-    quast.py -t ${params.threads} -o Quast_result --gene-finding --eukaryote ${assembly_file} --fragmented
+    quast -t ${params.threads} -o Quast_result --gene-finding --eukaryote ${assembly_file} --fragmented
     """
 }
 
