@@ -17,13 +17,13 @@ Figure 1: 1KSA Draft genome assembly decision tree
 
 The 1KSA Genome Assembly Pipeline is intended for use on the Centre for High Performance Computing (CHPC) and uses the following tools (Figure 2):
 * KMC for counting of k-mers in DNA (done separately)
-* Nanoplot for quality check
-* Nanofilt for filtering and trimming
-* Flye v2.9.5 for genome assembly (genomes smaller than 3 Gb)
+* Nanoplot v1.46.1 for quality check
+* Nanofilt 2.8.0 for filtering and trimming
+* Flye v2.9.6 for genome assembly (genomes smaller than 3 Gb)
 * Racon v1.5.0 for assembly polishing (flye assembly only)
-* Hifiasm v0.24.0-r703 for genome assembly (genomes larger than 3 Gb)
-* BUSCO v5.8.0 for assembly quality assessment
-* QUAST v5.2.0 for assembly quality assessment
+* Hifiasm v0.25.0 for genome assembly (genomes larger than 3 Gb)
+* BUSCO v6.0.0 for assembly quality assessment
+* QUAST v5.3.0 for assembly quality assessment
 
 The starting point for this workflow is RAW fastq files, i.e. basecalling has already been done.
 
