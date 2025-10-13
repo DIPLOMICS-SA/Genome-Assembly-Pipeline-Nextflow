@@ -607,6 +607,42 @@ mv "${species_name}_flye_mean_coverage.txt" "${species_name}_other_results_outpu
 mv nanoplot_before_trim nanoplot_after_trim quast_report Busco_results trimmed_fastq sam_file \
    Flye_results Racon_results Hifiasm_results "${species_name}_other_results_outputs" 2>/dev/null || true
 
+################################################################################
+# PART 6 — Append Software Versions from Container
+################################################################################
+echo "=== PART 6: Appending Software Versions ==="
+
+module load apptainer/1.2.3_SUID
+CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
+
+{   
+    echo -e "\n========================================"
+    echo "Software Versions (from container: $CONTAINER)"
+    echo "Checked on: $(date)"
+    echo "========================================"
+} >> "$report"
+
+# List of tools to check
+TOOLS=(
+    "NanoPlot"
+    "NanoFilt"
+    "hifiasm"
+    "flye"
+    "minimap2"
+    "samtools"
+    "racon"
+    "quast"
+    "busco"
+)
+
+for TOOL in "${TOOLS[@]}"; do
+    echo ">> $TOOL version:" >> "$report"
+    apptainer exec "$CONTAINER" $TOOL --version >> "$report" 2>&1 || echo "$TOOL not found in container" >> "$report"
+    echo "" >> "$report"
+done
+
+echo "  Software versions appended to report: $report"
+
 echo "🎉 All done!"
 
 ```
