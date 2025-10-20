@@ -59,7 +59,7 @@ if [[ "$ASSEMBLER" == "flye" ]]; then
 elif [[ "$ASSEMBLER" == "hifiasm" ]]; then
     if [[ ! -f $ASSEMBLY_HIFIASM ]]; then
         echo "▶️ Running Hifiasm assembly..."
-        bash run_hifiasm.sh "$TRIMMED" "$species_name" "$threads"
+        bash run_hifiasm.sh "$species_name" "$threads"
     else
         echo "Hifiasm assembly exists, skipping."
     fi
