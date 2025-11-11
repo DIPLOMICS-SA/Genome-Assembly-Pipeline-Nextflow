@@ -15,6 +15,7 @@ process NANOCHECK1 {
 }
 
 process TRIM {
+    module 'chopper'    
     publishDir "results/trimmed_fastq", mode: 'copy'
     input:
     path fastq_file
@@ -22,7 +23,7 @@ process TRIM {
     path "${params.species_name}.trimmed.fastq", emit: trimmed_fastq
     script:
     """
-    NanoFilt -q 10 $fastq_file > ${params.species_name}.trimmed.fastq
+    chopper -q 10 -i $fastq_file > ${params.species_name}.trimmed.fastq
     """
 }
 
