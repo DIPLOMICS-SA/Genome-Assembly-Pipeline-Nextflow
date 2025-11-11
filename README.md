@@ -608,42 +608,62 @@ mv nanoplot_before_trim nanoplot_after_trim quast_report Busco_results trimmed_f
    Flye_results Racon_results Hifiasm_results "${species_name}_other_results_outputs" 2>/dev/null || true
 
 ################################################################################
-# PART 6 — Append Software Versions from Container
+# PART 6 — Append Software Versions (Container + CHPC Modules)
 ################################################################################
 echo "=== PART 6: Appending Software Versions ==="
 
 module load apptainer/1.2.3_SUID
 CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
 
-{   
+{
     echo -e "\n========================================"
     echo "Software Versions (from container: $CONTAINER)"
     echo "Checked on: $(date)"
     echo "========================================"
 } >> "$report"
 
-# List of tools to check
-TOOLS=(
+# Tools in container
+CONTAINER_TOOLS=(
     "NanoPlot"
     "NanoFilt"
     "hifiasm"
     "flye"
     "minimap2"
     "samtools"
-    "racon"
     "quast"
     "busco"
 )
 
-for TOOL in "${TOOLS[@]}"; do
+# Tools loaded as CHPC modules
+MODULE_TOOLS=(
+    "racon"
+    "chopper"
+)
+
+# Check container tools
+for TOOL in "${CONTAINER_TOOLS[@]}"; do
     echo ">> $TOOL version:" >> "$report"
     apptainer exec "$CONTAINER" $TOOL --version >> "$report" 2>&1 || echo "$TOOL not found in container" >> "$report"
     echo "" >> "$report"
 done
 
-echo "  Software versions appended to report: $report"
+# Check CHPC module tools
+echo -e "\n========================================" >> "$report"
+echo "Software Versions (CHPC modules)" >> "$report"
+echo "========================================" >> "$report"
 
+for TOOL in "${MODULE_TOOLS[@]}"; do
+    echo ">> $TOOL version:" >> "$report"
+    module load "$TOOL" 2>/dev/null || echo "Could not load module: $TOOL" >> "$report"
+    $TOOL --version >> "$report" 2>&1 || echo "$TOOL version not available" >> "$report"
+    echo "" >> "$report"
+done
+
+echo "  Software versions appended to report: $report"
 echo "🎉 All done!"
+
+<img width="1328" height="1974" alt="image" src="https://github.com/user-attachments/assets/9cd77242-0a40-40c3-840b-0f64b03fc887" />
+
 
 ```
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_4.png)
