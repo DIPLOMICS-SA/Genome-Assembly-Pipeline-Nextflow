@@ -662,8 +662,6 @@ done
 echo "  Software versions appended to report: $report"
 echo "🎉 All done!"
 
-<img width="1328" height="1974" alt="image" src="https://github.com/user-attachments/assets/9cd77242-0a40-40c3-840b-0f64b03fc887" />
-
 
 ```
 ![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_4.png)
