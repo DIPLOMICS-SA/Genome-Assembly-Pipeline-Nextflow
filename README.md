@@ -6,7 +6,7 @@ Purpose: This project supports the 1KSA initiative, focusing on sequencing and a
 
 1KSA website: https://www.1ksa.org.za
 
-Detailed instructions: https://zenodo.org/communities/1ksa/records?q=&l=list&p=1&s=10&sort=newest
+Detailed instructions: [https://zenodo.org/communities/1ksa/records?q=&l=list&p=1&s=10&sort=newest](https://doi.org/10.5281/zenodo.17811930)
 
 ## Decision Tree
 Once sequencing is complete and your data has been transferred to the CHPC, refer to the decision tree below to determine the most suitable assembly approach moving forward:
