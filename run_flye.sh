@@ -18,6 +18,7 @@ CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
 module purge
 module load chpc/BIOMODULES
 module load apptainer/1.2.3_SUID
+module load chpc/singularity
 
 READS=$(realpath "$READS")
 
@@ -29,7 +30,7 @@ LOG="${SPECIES_NAME}_flye.log"
 
 if [[ -f params.json && -d 00-assembly ]]; then
     echo "Resuming Flye assembly..."
-    apptainer exec --bind /mnt/lustre,/home "$CONTAINER" \
+    singularity exec --bind /mnt/lustre,/home "$CONTAINER" \
         flye --${READ_TYPE} "$READS" -o . \
              --resume \
              --genome-size "$GENOME_SIZE" \
@@ -37,7 +38,7 @@ if [[ -f params.json && -d 00-assembly ]]; then
              -t "$THREADS" > "$LOG" 2>&1
 else
     echo "Running Flye assembly from scratch..."
-    apptainer exec --bind /mnt/lustre,/home "$CONTAINER" \
+    singularity exec --bind /mnt/lustre,/home "$CONTAINER" \
         flye --${READ_TYPE} "$READS" -o . \
              --genome-size "$GENOME_SIZE" \
              --asm-coverage "$COVERAGE" \
