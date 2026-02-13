@@ -16,6 +16,7 @@ CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
 module purge
 module load chpc/BIOMODULES
 module load apptainer/1.2.3_SUID
+module load chpc/singularity
 
 # Path to trimmed FASTQ
 TRIMMED=$(realpath "results/trimmed_fastq/${SPECIES_NAME}.trimmed.fastq")
@@ -40,7 +41,7 @@ fi
 
 # Run hifiasm inside container
 echo "Running Hifiasm..."
-apptainer exec --bind /mnt/lustre,/home "$CONTAINER" \
+singularity exec --bind /mnt/lustre,/home "$CONTAINER" \
     hifiasm -t "$THREADS" --ont "$TRIMMED" -o "$SPECIES_NAME" > "$LOG" 2>&1
 
 # Convert GFA outputs to FASTA with species name prefixes
