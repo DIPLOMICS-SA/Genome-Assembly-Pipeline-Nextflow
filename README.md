@@ -360,7 +360,7 @@ Enter
 qsub name_of_your_script_1.sh
 ```
 
-#### 5.2.5 If the wall time runs out, resubmit with the -resume option:
+#### 5.2.5 If the wall time runs out, resubmit your scrip:
 
 ```
 ## Navigate to your working directory
