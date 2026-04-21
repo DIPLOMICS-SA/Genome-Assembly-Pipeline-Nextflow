@@ -434,248 +434,22 @@ Detach from screen_3: ```CRTL A+D```
 #### 6.1.1 Start an interactive job in screen 4
 
 ```
+##  Re-attach to screen 4
+screen -r screen_4
+
+## Start an interactive job:
+qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change project number
+
 ## Navigate to your working directory
 cd /path/to/folder/with/species/fastq/files/Genome-Assembly-Pipeline-Nextflow
-
-qsub -I -l select=1:ncpus=12:mpiprocs=1 -q seriallong -P CBBIXXXX -l walltime=100:00:00   #change project number
 ```
 
 #### 6.1.2 Rename the assembly output files and generate a single report
 
 ```
-## Create a script
-nano your_script_name_3.sh
-```
-
-#### 6.1.3 Example Script Template (copy and paste)
-
-```
-#!/bin/bash
-set -euo pipefail
-
-# === USER INPUT ===
-species_name="species_name"             # Change species name (same as the species_name in params.config)
-cd /path/to/results                     # Change to actual results folder
-
-# === Load dependencies ===
-module load chpc/BIOMODULES
-module load samtools
-
-################################################################################
-# PART 1 — SAMTOOLS PROCESSING
-################################################################################
-echo "=== PART 1: SAMTOOLS ==="
-
-if [[ ! -f ./sam_file/${species_name}.sam ]]; then
-    echo "❌ ${species_name}.sam not found in ./sam_file/"
-    exit 1
-fi
-
-# Sort SAM → BAM
-if [[ ! -f ./sam_file/${species_name}_sorted.bam ]]; then
-    echo "▶️ Sorting SAM..."
-    samtools view -bS ./sam_file/${species_name}.sam | \
-        samtools sort -o ./sam_file/${species_name}_sorted.bam
-else
-    echo "✅ Sorted BAM already exists"
-fi
-
-# Coverage
-if [[ ! -f ./sam_file/minimap2_coverage.txt ]]; then
-    echo "▶️ Calculating depth coverage..."
-    samtools depth ./sam_file/${species_name}_sorted.bam |
-        awk '{sum+=$3} END { print "Average = ",sum/NR}' \
-        > ./sam_file/minimap2_coverage.txt
-else
-    echo "✅ Coverage already calculated"
-fi
-
-# Stats
-if [[ ! -f ./sam_file/sam_stats.txt ]]; then
-    echo "▶️ Generating SAM stats..."
-    samtools stats ./sam_file/${species_name}_sorted.bam |
-        grep ^SN | cut -f 2- > ./sam_file/sam_stats.txt
-else
-    echo "✅ SAM stats already exist"
-fi
-
-################################################################################
-# PART 2 — Detect Assembler + Handle Coverage
-################################################################################
-echo "=== PART 2: Assembler Detection ==="
-
-assembler=""
-if [[ -d ./Flye_results ]]; then
-    assembler="flye"
-elif [[ -d ./Hifiasm_results ]]; then
-    assembler="hifiasm"
-fi
-
-if [[ "$assembler" == "flye" ]]; then
-    echo "🔎 Flye assembly detected — extracting mean coverage..."
-    OUTPUT_FILE="${species_name}_flye_mean_coverage.txt"
-    > "$OUTPUT_FILE"
-    for logfile in $(find ./Flye_results -type f -name "flye.log"); do
-        mean_cov=$(grep "Mean coverage:" "$logfile" | awk '{print $3}')
-        [[ -n "$mean_cov" ]] && echo "$logfile: $mean_cov" >> "$OUTPUT_FILE"
-    done
-elif [[ "$assembler" == "hifiasm" ]]; then
-    echo "🔎 Hifiasm assembly detected — no flye.log coverage to extract."
-else
-    echo "⚠️ No assembler results directory found."
-fi
-
-################################################################################
-# PART 3 — Collect Key Outputs
-################################################################################
-echo "=== PART 3: Collect Outputs ==="
-
-mkdir -p "${species_name}" "${species_name}_other_results_outputs"
-
-# NanoPlot results
-mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoStats.txt "${species_name}_NanoStats_before_trim.txt" 2>/dev/null || true
-mv ./nanoplot_before_trim/NanoPlot_CHECK_1/NanoPlot-report.html "${species_name}_NanoPlot_before_trim.html" 2>/dev/null || true
-mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoStats.txt "${species_name}_NanoStats_after_trim.txt" 2>/dev/null || true
-mv ./nanoplot_after_trim/NanoPlot_CHECK_2/NanoPlot-report.html "${species_name}_NanoPlot_after_trim.html" 2>/dev/null || true
-
-# Trimmed FASTQ
-mv ./trimmed_fastq/${species_name}.trimmed.fastq ./"${species_name}" 2>/dev/null || true
-
-# Assemblies
-if [[ "$assembler" == "flye" ]]; then
-    mv ./Flye_results/${species_name}_assembly.fasta ./"${species_name}/${species_name}_flye_assembly.fasta" 2>/dev/null || true
-    mv ./Racon_results/${species_name}_Racon_polished.fasta ./"${species_name}/${species_name}_racon_polished.fasta" 2>/dev/null || true
-elif [[ "$assembler" == "hifiasm" ]]; then
-    mv ./Hifiasm_results/${species_name}_ctg.fasta ./"${species_name}/${species_name}_hifiasm_assembly.fasta" 2>/dev/null || true
-fi
-
-# BUSCO + QUAST
-mv ./Busco_results/Busco_output/short_summary.specific.*.txt "${species_name}_busco_summary.txt" 2>/dev/null || true
-mv ./quast_report/Quast_result/report.txt "${species_name}_quast_report.txt" 2>/dev/null || true
-
-# Coverage + stats
-mv ./sam_file/minimap2_coverage.txt "${species_name}_minimap2_coverage.txt"
-mv ./sam_file/sam_stats.txt "${species_name}_sam_stats.txt"
-
-################################################################################
-# PART 4 — Compile Final Report
-################################################################################
-echo "=== PART 4: Final Report ==="
-
-ordered_files=(
-    "${species_name}_kmer_total_number_bases.txt"
-    "${species_name}_kmer_cov_size.txt"
-    "${species_name}_NanoStats_before_trim.txt"
-    "${species_name}_NanoStats_after_trim.txt"
-    "${species_name}_minimap2_coverage.txt"
-    "${species_name}_sam_stats.txt"
-    "${species_name}_quast_report.txt"
-    "${species_name}_busco_summary.txt"
-)
-
-[[ -f "${species_name}_flye_mean_coverage.txt" ]] && ordered_files+=("${species_name}_flye_mean_coverage.txt")
-
-report="${species_name}_report.txt"
-{
-    echo "${species_name^} Assembly Report for RedCap"
-    echo "Generated on: $(date)"
-    echo -e "\n========================================\n"
-    for file in "${ordered_files[@]}"; do
-        if [[ -f "$file" ]]; then
-            echo "========== $file =========="
-            cat "$file"
-            echo -e "\n\n"
-        fi
-    done
-} > "$report"
-
-echo "✅ Report generated: $report"
-
-################################################################################
-# PART 5 — Organize Output Folders
-################################################################################
-echo "=== PART 5: Organizing Outputs ==="
-
-mv *_NanoStats_before_trim.txt *_NanoStats_after_trim.txt *_NanoPlot_*.html "${species_name}" 2>/dev/null || true
-mv "${species_name}"_busco_summary.txt "${species_name}" 2>/dev/null || true
-mv "${species_name}"_quast_report.txt "${species_name}" 2>/dev/null || true
-
-mv "${species_name}_minimap2_coverage.txt" "${species_name}_other_results_outputs" 2>/dev/null || true
-mv "${species_name}_sam_stats.txt" "${species_name}_other_results_outputs" 2>/dev/null || true
-mv "${species_name}_flye_mean_coverage.txt" "${species_name}_other_results_outputs" 2>/dev/null || true
-
-mv nanoplot_before_trim nanoplot_after_trim quast_report Busco_results trimmed_fastq sam_file \
-   Flye_results Racon_results Hifiasm_results "${species_name}_other_results_outputs" 2>/dev/null || true
-
-################################################################################
-# PART 6 — Append Software Versions (Container + CHPC Modules)
-################################################################################
-echo "=== PART 6: Appending Software Versions ==="
-
-module load apptainer/1.2.3_SUID
-CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
-
-{
-    echo -e "\n========================================"
-    echo "Software Versions (from container: $CONTAINER)"
-    echo "Checked on: $(date)"
-    echo "========================================"
-} >> "$report"
-
-# Tools in container
-CONTAINER_TOOLS=(
-    "NanoPlot"
-    "NanoFilt"
-    "hifiasm"
-    "flye"
-    "minimap2"
-    "samtools"
-    "quast"
-    "busco"
-)
-
-# Tools loaded as CHPC modules
-MODULE_TOOLS=(
-    "racon"
-    "chopper"
-)
-
-# Check container tools
-for TOOL in "${CONTAINER_TOOLS[@]}"; do
-    echo ">> $TOOL version:" >> "$report"
-    apptainer exec "$CONTAINER" $TOOL --version >> "$report" 2>&1 || echo "$TOOL not found in container" >> "$report"
-    echo "" >> "$report"
-done
-
-# Check CHPC module tools
-echo -e "\n========================================" >> "$report"
-echo "Software Versions (CHPC modules)" >> "$report"
-echo "========================================" >> "$report"
-
-for TOOL in "${MODULE_TOOLS[@]}"; do
-    echo ">> $TOOL version:" >> "$report"
-    module load "$TOOL" 2>/dev/null || echo "Could not load module: $TOOL" >> "$report"
-    $TOOL --version >> "$report" 2>&1 || echo "$TOOL version not available" >> "$report"
-    echo "" >> "$report"
-done
-
-echo "  Software versions appended to report: $report"
-echo "🎉 All done!"
-
-
-```
-![Image Alt text](https://github.com/DIPLOMICS-SA/Genome-Assembly-Pipeline-Nextflow/blob/main/Figure_4.png)
-
-#### 6.1.4 Save and run the script
-
-```
-## Save and Exit
-^X  # Exit  
-y   # Confirm Save  
-Enter  
-
-## Run script  
-bash name_of_your_script_3.sh
+## Run the report script:
+bash report_script.sh species_name
+#change the species_name
 ```
 
 # Workflow outputs
@@ -684,6 +458,6 @@ The primary outputs of the pipeline include:
 * A fastq quality control report
 * A busco report before polishing 
 * A quast quality report before polishing 
-* 2 assembled fasta files (From Flye and Racon)
+* 2 assembled fasta files (from Flye and Racon)/ 1 assembled fasta file (from Hifiasm)
 * A busco report after polishing - The BUSCO score from this report is documented on the species card
 * A quast quality report after polishing - The genome size from this report is documented on the species card
