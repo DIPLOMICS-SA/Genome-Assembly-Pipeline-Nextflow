@@ -15,7 +15,6 @@ CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
 # Load Apptainer
 module purge
 module load chpc/BIOMODULES
-module load apptainer/1.2.3_SUID
 module load chpc/singularity
 
 # Path to trimmed FASTQ
