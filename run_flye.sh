@@ -17,7 +17,6 @@ CONTAINER="/home/apps/chpc/bio/1ksa_pipeline/1ksa_pipeline.sif"
 
 module purge
 module load chpc/BIOMODULES
-module load apptainer/1.2.3_SUID
 module load chpc/singularity
 
 READS=$(realpath "$READS")
