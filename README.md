@@ -452,6 +452,14 @@ bash report_script.sh species_name
 #change the species_name
 ```
 
+#### 6.1.3 Generate a snail plot 
+
+```
+## Run the snail plot script:
+bash blobtools_snail.sh species_name
+#change the species_name
+```
+
 # Workflow outputs
 
 The primary outputs of the pipeline include:
