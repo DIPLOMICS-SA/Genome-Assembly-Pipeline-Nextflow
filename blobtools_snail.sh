@@ -25,7 +25,7 @@ BUSCO=$(find "$BUSCO_DIR" -name "full_table.tsv" | head -n 1)
 [[ -f "$BUSCO" ]] || { echo "ERROR: BUSCO full_table.tsv not found."; exit 1; }
 
 # Create BlobDir
-OUTDIR="${SPECIES}_blobtools"
+OUTDIR="${SPECIES}"
 mkdir -p "$OUTDIR"
 
 cp "$FASTA" "$OUTDIR/"
