@@ -455,6 +455,7 @@ bash report_script.sh species_name
 #### 6.1.3 Generate a snail plot 
 
 ```
+## This script will only work after the report_script.sh has been run and the files have been organized into specific subfolders.
 ## Run the snail plot script:
 bash blobtools_snail.sh species_name
 #change the species_name
