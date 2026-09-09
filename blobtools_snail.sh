@@ -16,13 +16,21 @@ BASE="./results"
 RESULTS_DIR="${BASE}/${SPECIES}"
 BUSCO_DIR="${BASE}/${SPECIES}_other_results_outputs/Busco_results/Busco_output"
 
-# Locate files
+# Locate files: prefer racon-polished, fall back to raw hifiasm assembly
 FASTA=$(find "$RESULTS_DIR" -name "*_racon_polished.fasta" | head -n 1)
+
+if [[ -z "$FASTA" ]]; then
+    echo "Racon polished FASTA not found, falling back to hifiasm assembly..."
+    FASTA=$(find "$RESULTS_DIR" -name "*_hifiasm_assembly.fasta" | head -n 1)
+fi
+
 BUSCO=$(find "$BUSCO_DIR" -name "full_table.tsv" | head -n 1)
 
 # Check files exist
-[[ -f "$FASTA" ]] || { echo "ERROR: Racon polished FASTA not found."; exit 1; }
+[[ -f "$FASTA" ]] || { echo "ERROR: Neither racon polished nor hifiasm assembly FASTA found."; exit 1; }
 [[ -f "$BUSCO" ]] || { echo "ERROR: BUSCO full_table.tsv not found."; exit 1; }
+
+echo "Using assembly: $(basename "$FASTA")"
 
 # Create BlobDir
 OUTDIR="${SPECIES}"
